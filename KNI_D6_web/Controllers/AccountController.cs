@@ -21,9 +21,10 @@ namespace KNI_D6_web.Controllers
         }
 
 
-        public IActionResult Login()
+        [HttpGet]
+        public IActionResult Login(string returnUrl = null)
         {
-            return View();
+            return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
 
         [HttpGet]
@@ -61,5 +62,33 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            IActionResult result = View(model);
+            if (ModelState.IsValid)
+            {
+                var signInResult = await _signInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, false);
+                if (signInResult.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))                
+                        result = Redirect(model.ReturnUrl);
+                    else
+                        result = RedirectToAction("Index", "Home");
+                }
+                else
+                    ModelState.AddModelError("", "Неверный логин и (или) пароль");
+            }
+            return result;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

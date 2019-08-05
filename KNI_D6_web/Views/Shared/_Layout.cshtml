@@ -52,10 +52,26 @@
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                                <button class="btn btn-outline-danger ml-1" type="submit">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="get" asp-area="" asp-controller="Account" asp-action="Login">
+                                <button class="btn btn-outline-success ml-1" type="submit">Login</button>
+                            </form>
+                        }
+                    </li>
+                    <li>
+
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                        <form method="get" asp-area="" asp-controller="Account" asp-action="Register">
+                            <button class="btn btn-outline-primary ml-1" type="submit">Register</button>
+                        </form>
                     </li>
                 </ul>
             </div>
