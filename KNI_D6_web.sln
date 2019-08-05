@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KNI_D6_web", "KNI_D6_web\KNI_D6_web.csproj", "{A2DE1C40-BDAD-4413-944A-644095F963D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KNI_D6_web", "KNI_D6_web\KNI_D6_web.csproj", "{A2DE1C40-BDAD-4413-944A-644095F963D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KNI_D6_web.Model", "KNI_D6_web.Model\KNI_D6_web.Model.csproj", "{71C047D0-DFEB-4A96-A800-68A27C8CC84E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A2DE1C40-BDAD-4413-944A-644095F963D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2DE1C40-BDAD-4413-944A-644095F963D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2DE1C40-BDAD-4413-944A-644095F963D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71C047D0-DFEB-4A96-A800-68A27C8CC84E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71C047D0-DFEB-4A96-A800-68A27C8CC84E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71C047D0-DFEB-4A96-A800-68A27C8CC84E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71C047D0-DFEB-4A96-A800-68A27C8CC84E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

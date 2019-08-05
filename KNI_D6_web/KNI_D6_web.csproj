@@ -19,7 +19,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\KNI_D6_web.Model\KNI_D6_web.Model.csproj" />
   </ItemGroup>
-
 </Project>
