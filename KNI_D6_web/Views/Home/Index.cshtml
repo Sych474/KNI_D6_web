@@ -3,5 +3,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Привет!</h1>
+    <h1 class="display-4">@(User.Identity.IsAuthenticated ? $"Привет, {@User.Identity.Name}!" : $"Привет, незнакомец!")</h1>
+</div>
+<div>
 </div>
