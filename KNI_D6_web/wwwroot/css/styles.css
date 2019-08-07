@@ -1,0 +1,11 @@
+﻿
+.text_default {
+    font-size: 125%;
+    text-align: justify;
+    text-indent: 5%;
+}
+
+.text_highlighted {
+    font-size: 150%;
+    text-indent: 0%;
+}
