@@ -1,7 +1,26 @@
-﻿
+﻿@model  KNI_D6_web.ViewModels.Users.UserDetailsViewModel
 @{
     ViewData["Title"] = "О игроке";
 }
 
-<h1>О игроке</h1>
+<h1>О игроке @Model.User.UserName</h1>
 
+
+<div>
+    <ul>
+        @foreach (var item in Model.User.ParameterValues)
+        {
+            <li>@item.Parameter.Name ___ value @item.Value </li>
+        }
+    </ul>
+</div>
+
+<div>
+    <h2>Достижения @Model.User.UserName</h2>
+    <ul>
+        @foreach (var item in Model.User.UserAchievements)
+        {
+            <li>@item.Achievement.Name ___</li>
+        }
+    </ul>
+</div>
