@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190805130214_Initial")]
-    partial class Initial
+    [Migration("20190809152640_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -92,8 +92,6 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int>("ParameterType");
-
                     b.HasKey("Id");
 
                     b.ToTable("Parameters");
@@ -105,13 +103,7 @@ namespace KNI_D6_web.Model.Migrations
 
                     b.Property<string>("UserId");
 
-                    b.Property<DateTime>("DateValue");
-
-                    b.Property<double?>("DoubleValue");
-
-                    b.Property<int?>("IntValue");
-
-                    b.Property<string>("StringValue");
+                    b.Property<int>("Value");
 
                     b.HasKey("ParameterId", "UserId");
 
