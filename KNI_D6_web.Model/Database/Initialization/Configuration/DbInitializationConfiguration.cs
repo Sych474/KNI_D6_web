@@ -11,5 +11,11 @@ namespace KNI_D6_web.Model.Database.Initialization.Configuration
         public IEnumerable<ParameterValuesPreset> ParameterValuesPresets { get; set; }
 
         public IEnumerable<UserAchievementsPreset> UserAchievementsPresets { get; set; }
+
+        public string AdminLogin { get; set; }
+
+        public string AdminPassword { get; set; }
+
+        public string AdminEmail { get; set; }
     }
 }
