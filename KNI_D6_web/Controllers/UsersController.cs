@@ -51,5 +51,17 @@ namespace KNI_D6_web.Controllers
 
             return result;
         }
+
+        [Route("UserDetails/{login}")]
+        public IActionResult UserDetailsByLogin(string login)
+        {
+            IActionResult result = BadRequest(login);
+
+            var _user = _dbContext.Users.Where(u => u.UserName == login).FirstOrDefault();
+            if (_user != null)
+                result = RedirectToAction("UserDetails", "Users", new { id = _user.Id });
+
+            return result;
+        }
     }
 }
