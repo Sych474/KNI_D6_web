@@ -1,7 +1,63 @@
-﻿
+﻿@model  KNI_D6_web.ViewModels.Users.UserDetailsViewModel
 @{
     ViewData["Title"] = "О игроке";
 }
 
-<h1>О игроке</h1>
+<h1>О игроке @Model.User.UserName</h1>
 
+<div>
+    <table class="table table-hover">
+        <tbody>
+            @foreach (var item in Model.User.ParameterValues)
+            {
+                <tr>
+                    <td scope="row">@item.Parameter.Name </td>
+                    <td>@item.Value </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h2>Достижения </h2>
+    <table class="table table-hover">
+        @if (Model.User.UserAchievements.Any())
+        {
+            @foreach (var item in Model.User.UserAchievements)
+            {
+                <tr>
+                    <td>@item.Achievement.Name</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr class="table-danger">
+                <td>Достижений пока нет, но скоро будут!</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div>
+    <h2>Посещаемость</h2>
+    <table class="table table-hover">
+        @if (Model.EventsViewModels.Any())
+        {
+            @foreach (var item in Model.EventsViewModels)
+            {
+                <tr class="@(item.IsVisited?"table-success":"table-danger")">
+                    <td>@item.EventName</td>
+                    <td>@item.EventDate.Date.ToLongDateString()</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr class="table-danger">
+                <td>Список мероприятий пуст!</td>
+            </tr>
+        }
+    </table>
+</div>

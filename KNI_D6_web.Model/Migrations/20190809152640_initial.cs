@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KNI_D6_web.Model.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -80,8 +80,7 @@ namespace KNI_D6_web.Model.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(nullable: false),
-                    ParameterType = table.Column<int>(nullable: false)
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -294,10 +293,7 @@ namespace KNI_D6_web.Model.Migrations
                 {
                     ParameterId = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: false),
-                    IntValue = table.Column<int>(nullable: true),
-                    StringValue = table.Column<string>(nullable: true),
-                    DoubleValue = table.Column<double>(nullable: true),
-                    DateValue = table.Column<DateTime>(nullable: false)
+                    Value = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

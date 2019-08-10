@@ -15,12 +15,6 @@ namespace KNI_D6_web.Model.Parameters
 
         public User User { get; set; }
 
-        public int? IntValue { get; set; }
-
-        public string StringValue { get; set; }
-
-        public double? DoubleValue { get; set; }
-
-        public DateTime DateValue { get; set; }
+        public int Value { get; set; }
     }
 }

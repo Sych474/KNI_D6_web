@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
+using KNI_D6_web.Model.Database;
+using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +15,14 @@ namespace KNI_D6_web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ApplicationDbContext _dbContext;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _dbContext = dbContext;
         }
-
 
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -49,6 +52,12 @@ namespace KNI_D6_web.Controllers
                 if (identityResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, false);
+
+                    var currentUser = await _userManager.FindByNameAsync(model.Login);
+                    foreach (var parameter in _dbContext.Parameters)
+                        _dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = currentUser.Id, Value = 0 });
+                    await _dbContext.SaveChangesAsync();
+
                     result = RedirectToAction("Index", "Home");
                 }
                 else
