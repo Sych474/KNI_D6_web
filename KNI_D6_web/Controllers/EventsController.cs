@@ -7,25 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
+using Microsoft.AspNetCore.Authorization;
+using KNI_D6_web.ViewModels.Events;
+using Microsoft.AspNetCore.Identity;
 
 namespace KNI_D6_web.Controllers
 {
+    [Authorize(Roles = UserRoles.AdminRole)]
     public class EventsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext dbContext;
 
         public EventsController(ApplicationDbContext context)
         {
-            _context = context;
+            this.dbContext = context;
         }
 
-        // GET: Events
+
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Events.ToListAsync());
+            var viewModel = new EventsViewModel()
+            {
+                Events = await dbContext.Events.OrderBy(x => x.Date).ToListAsync(),
+                IsAdmin = this.User.IsInRole(UserRoles.AdminRole)
+            };
+            return View(viewModel);
         }
 
-        // GET: Events/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,7 +43,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events
+            var @event = await dbContext.Events
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {
@@ -43,29 +53,24 @@ namespace KNI_D6_web.Controllers
             return View(@event);
         }
 
-        // GET: Events/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Events/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Date")] Event @event)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(@event);
-                await _context.SaveChangesAsync();
+                dbContext.Add(@event);
+                await dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(@event);
         }
 
-        // GET: Events/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,7 +78,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events.FindAsync(id);
+            var @event = await dbContext.Events.FindAsync(id);
             if (@event == null)
             {
                 return NotFound();
@@ -81,9 +86,6 @@ namespace KNI_D6_web.Controllers
             return View(@event);
         }
 
-        // POST: Events/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Date")] Event @event)
@@ -97,8 +99,8 @@ namespace KNI_D6_web.Controllers
             {
                 try
                 {
-                    _context.Update(@event);
-                    await _context.SaveChangesAsync();
+                    dbContext.Update(@event);
+                    await dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,7 +118,6 @@ namespace KNI_D6_web.Controllers
             return View(@event);
         }
 
-        // GET: Events/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,7 +125,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events
+            var @event = await dbContext.Events
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {
@@ -134,20 +135,19 @@ namespace KNI_D6_web.Controllers
             return View(@event);
         }
 
-        // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
+            var @event = await dbContext.Events.FindAsync(id);
+            dbContext.Events.Remove(@event);
+            await dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EventExists(int id)
         {
-            return _context.Events.Any(e => e.Id == id);
+            return dbContext.Events.Any(e => e.Id == id);
         }
     }
 }

@@ -1,41 +1,50 @@
-﻿@model IEnumerable<KNI_D6_web.Model.Event>
+﻿@model KNI_D6_web.ViewModels.Events.EventsViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Мероприятия КНИ</h1>
+@if (Model.IsAdmin)
+{
+    <form method="get" asp-area="" asp-controller="Events" asp-action="Create">
+        <button class="btn btn-outline-primary m-2" type="submit">Создать новое мероприятие</button>
+    </form>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Название
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                Дата начала мероприятия
             </th>
-            <th></th>
+            <th>
+                Действия
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Events)
+        {
+            <tr class="table-@(item.Date < DateTime.Now?"secondary":"success")">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    <a class="btn btn-secondary ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                    @if (Model.IsAdmin)
+                    {
+                        <a class="btn btn-warning ml-1" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                        <a class="btn btn-danger ml-1" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
