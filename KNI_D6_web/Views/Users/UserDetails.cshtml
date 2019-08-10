@@ -5,22 +5,28 @@
 
 <h1>О игроке @Model.User.UserName</h1>
 
-
 <div>
-    <ul>
-        @foreach (var item in Model.User.ParameterValues)
-        {
-            <li>@item.Parameter.Name ___ value @item.Value </li>
-        }
-    </ul>
+    <table class="table">
+        <tbody>
+            @foreach (var item in Model.User.ParameterValues)
+            {
+                <tr>
+                    <td>@item.Parameter.Name </td>
+                    <td>@item.Value </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <div>
     <h2>Достижения @Model.User.UserName</h2>
-    <ul>
+    <table class="table">
         @foreach (var item in Model.User.UserAchievements)
         {
-            <li>@item.Achievement.Name ___</li>
+            <tr>
+                <td>@item.Achievement.Name</td>
+            </tr>
         }
-    </ul>
+    </table>
 </div>
