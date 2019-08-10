@@ -11,7 +11,6 @@ namespace KNI_D6_web.Model.Database.Initialization
     {
         private static readonly int DefaultValue = 0;
 
-
         public static void InitializeDatabase(ApplicationDbContext dbContext, DbInitializationConfiguration configuration)
         {
             AddParameters(dbContext, configuration.Parameters);
@@ -83,13 +82,6 @@ namespace KNI_D6_web.Model.Database.Initialization
                             dbContext.ParameterValues.Add(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = DefaultValue });
                 }
             }
-            dbContext.SaveChanges();
-        }
-
-        private static void AddParameterValueIfNotExists(ApplicationDbContext dbContext, ParameterValue parameterValue)
-        {
-            if (!dbContext.ParameterValues.Any(x => x.UserId == parameterValue.UserId && x.ParameterId == parameterValue.ParameterId))
-                dbContext.ParameterValues.Add(parameterValue);
             dbContext.SaveChanges();
         }
     }
