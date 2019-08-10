@@ -1,4 +1,4 @@
-﻿@model  KNI_D6_web.ViewModels.Users.UserDetailsViewModel
+﻿@model KNI_D6_web.ViewModels.Users.UserDetailsViewModel
 @{
     ViewData["Title"] = "О игроке";
 }
@@ -22,21 +22,23 @@
 <div>
     <h2>Достижения </h2>
     <table class="table table-hover">
-        @if (Model.User.UserAchievements.Any())
-        {
-            @foreach (var item in Model.User.UserAchievements)
+        <tbody>
+            @if (Model.User.UserAchievements.Any())
             {
-                <tr>
-                    <td>@item.Achievement.Name</td>
+                @foreach (var item in Model.User.UserAchievements)
+                {
+                    <tr>
+                        <td>@item.Achievement.Name</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="table-danger">
+                    <td>Достижений пока нет, но скоро будут!</td>
                 </tr>
             }
-        }
-        else
-        {
-            <tr class="table-danger">
-                <td>Достижений пока нет, но скоро будут!</td>
-            </tr>
-        }
+        </tbody>
     </table>
 </div>
 
@@ -60,4 +62,8 @@
             </tr>
         }
     </table>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary mt-4" asp-action="Index">К списку игроков</a>
 </div>

@@ -16,27 +16,35 @@ namespace KNI_D6_web.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly SignInManager<User> signInManager;
 
         public UsersController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var viewModel = new UsersViewModel()
+            {
+                Users = await dbContext.Users
+                    .Include(u => u.UserEvents).ThenInclude(ue => ue.Event)
+                    .Include(u => u.UserAchievements)
+                    .OrderByDescending(u => u.UserAchievements.Count())
+                    .ToListAsync()
+            };
+
+            return View(viewModel);
         }
 
         [Route("{id}")]
-        public IActionResult UserDetails(string id)
+        public async Task<IActionResult> UserDetails(string id)
         {
             IActionResult result = BadRequest(id);
-            var user = dbContext.Users
+            var user = await dbContext.Users
                 .Include(x => x.ParameterValues).ThenInclude(pv => pv.Parameter)
                 .Include(x => x.UserAchievements).ThenInclude(pv => pv.Achievement)
                 .Include(x => x.UserEvents).ThenInclude(pv => pv.Event)
-                .Where(u => u.Id == id).FirstOrDefault();
+                .Where(u => u.Id == id).FirstOrDefaultAsync();
 
             if (user != null)
             {
@@ -44,7 +52,7 @@ namespace KNI_D6_web.Controllers
                 {
                     IsAuthorizedUser = User.Identity.IsAuthenticated && (User.Identity.Name == user.UserName),
                     User = user,
-                    EventsViewModels = CreateEventViewModelsForUser(dbContext.Events, user).OrderBy(x => x.EventDate)
+                    EventsViewModels = CreateEventViewModelsForUser(await dbContext.Events.ToListAsync(), user).OrderBy(x => x.EventDate)
                 }) ;
             }
 
@@ -52,11 +60,11 @@ namespace KNI_D6_web.Controllers
         }
 
         [Route("UserDetails/{login}")]
-        public IActionResult UserDetailsByLogin(string login)
+        public async Task<IActionResult> UserDetailsByLogin(string login)
         {
             IActionResult result = BadRequest(login);
 
-            var _user = dbContext.Users.Where(u => u.UserName == login).FirstOrDefault();
+            var _user = await dbContext.Users.Where(u => u.UserName == login).FirstOrDefaultAsync();
             if (_user != null)
                 result = RedirectToAction("UserDetails", "Users", new { id = _user.Id });
 
