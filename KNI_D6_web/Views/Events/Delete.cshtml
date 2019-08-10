@@ -1,0 +1,35 @@
+﻿@model KNI_D6_web.Model.Event
+
+@{
+    ViewData["Title"] = "Удаление мероприятия";
+}
+
+<h1>Удаление мероприятия</h1>
+
+<h3>Вы уверены что хотите удалить это мероприятие? </h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Название
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            Дата начала проведения мероприятия
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+    </form>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary mt-4" asp-action="Index">К списку мероприятий</a>
+</div>

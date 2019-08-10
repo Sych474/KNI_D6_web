@@ -30,7 +30,10 @@
         "UserLogin": "sych",
         "achievementName": "Мастер"
       }
-    ]
+    ],
+    "adminLogin": "sych",
+    "adminPassword": "Pa$$w0rd",
+    "adminEmail": "rk474@yandex.ru"
   }
 }
 

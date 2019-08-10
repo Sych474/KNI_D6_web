@@ -51,7 +51,7 @@ namespace KNI_D6_web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            InitializeDatabase(services);
+            InitializeDatabase(services).Wait();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,11 +78,13 @@ namespace KNI_D6_web
             });
         }
 
-        private void InitializeDatabase(IServiceCollection services)
+        private async Task InitializeDatabase(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
             var dbContext = serviceProvider.GetService<ApplicationDbContext>();
-            DatabaseInitializer.InitializeDatabase(dbContext, dbInitializationConfiguration);
+            var userManager = serviceProvider.GetService<UserManager<User>>();
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+            await DatabaseInitializer.InitializeDatabase(dbContext, userManager, roleManager, dbInitializationConfiguration);
         }
     }
 }
