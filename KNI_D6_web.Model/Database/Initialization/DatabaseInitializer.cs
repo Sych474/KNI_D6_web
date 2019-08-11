@@ -20,13 +20,13 @@ namespace KNI_D6_web.Model.Database.Initialization
 
             await AddAdminUser(userManager, configuration.AdminLogin, configuration.AdminPassword, configuration.AdminEmail);
 
-            AddParameters(dbContext, configuration.Parameters);
+            await AddParameters(dbContext, configuration.Parameters);
 
-            AddParameterValues(dbContext, configuration.Parameters, configuration.ParameterValuesPresets);
+            await AddParameterValues(dbContext, configuration.Parameters, configuration.ParameterValuesPresets);
 
-            AddAchievements(dbContext, configuration.Achievements);
+            await AddAchievements(dbContext, configuration.Achievements);
 
-            AddUserAchievements(dbContext, configuration.UserAchievementsPresets);
+            await AddUserAchievements(dbContext, configuration.UserAchievementsPresets);
         }
 
         private static async Task AddAdminUser(UserManager<User> userManager, string adminLogin, string adminPassword, string adminEmail)
@@ -39,7 +39,6 @@ namespace KNI_D6_web.Model.Database.Initialization
                 if (!identityResult.Succeeded)
                     throw new Exception("Can not create admin user");
             }
-            await userManager.AddToRolesAsync(admin, UserRoles.Roles);
 
             foreach (var role in UserRoles.Roles)
             {
@@ -57,52 +56,61 @@ namespace KNI_D6_web.Model.Database.Initialization
             }
         }
 
-        private static void AddUserAchievements(ApplicationDbContext dbContext, IEnumerable<UserAchievementsPreset> userAchievementsPresets)
+        private static async Task AddUserAchievements(ApplicationDbContext dbContext, IEnumerable<UserAchievementsPreset> userAchievementsPresets)
         {
             foreach (var item in userAchievementsPresets)
             {
-                var achievement = dbContext.Achievements.Where(p => p.Name == item.AchievementName).FirstOrDefault();
-                var user = dbContext.Users.Where(u => u.UserName == item.UserLogin).FirstOrDefault();
+                var achievement = dbContext.Achievements.AsNoTracking().Where(p => p.Name == item.AchievementName).FirstOrDefault();
+                var user = dbContext.Users.AsNoTracking().Where(u => u.UserName == item.UserLogin).FirstOrDefault();
                 if (achievement != null && user != null)
-                    if (!dbContext.UserAchievements.Any(x => x.AchievementId == achievement.Id && x.UserId == user.Id))
-                        dbContext.UserAchievements.Add(new UserAchievement() { UserId = user.Id, AchievementId = achievement.Id });
+                {
+                    if (!await dbContext.UserAchievements.AnyAsync(x => x.AchievementId == achievement.Id && x.UserId == user.Id))
+                    {
+                        await dbContext.UserAchievements.AddAsync(new UserAchievement() { UserId = user.Id, AchievementId = achievement.Id });
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
             }
-            dbContext.SaveChanges();
         }
 
-        private static void AddAchievements(ApplicationDbContext dbContext, IEnumerable<string> achievementNames)
+        private static async Task AddAchievements(ApplicationDbContext dbContext, IEnumerable<string> achievementNames)
         {
             foreach (var name in achievementNames)
             {
-                if (!dbContext.Achievements.Any(x => x.Name == name))
-                    dbContext.Achievements.Add(new Achievement() { Name = name });
+                if (!await dbContext.Achievements.AnyAsync(x => x.Name == name))
+                {
+                    await dbContext.Achievements.AddAsync(new Achievement() { Name = name });
+                    await dbContext.SaveChangesAsync();
+                }
             }
-            dbContext.SaveChanges();
         }
 
-        private static void AddParameters(ApplicationDbContext dbContext, IEnumerable<string> parameterNames)
+        private static async Task AddParameters(ApplicationDbContext dbContext, IEnumerable<string> parameterNames)
         {
             foreach (var name in parameterNames)
             {
-                if (!dbContext.Parameters.Any(x => x.Name == name))
-                    dbContext.Parameters.Add(new Parameter() { Name = name });
+                if (!await dbContext.Parameters.AnyAsync(x => x.Name == name))
+                {
+                    await dbContext.Parameters.AddAsync(new Parameter() { Name = name });
+                    await dbContext.SaveChangesAsync();
+                }
             }
-            dbContext.SaveChanges();
         }
 
-        private static void AddParameterValues(ApplicationDbContext dbContext, IEnumerable<string> parameterNames, IEnumerable<ParameterValuesPreset> parameterValuesPresets)
+        private static async Task AddParameterValues(ApplicationDbContext dbContext, IEnumerable<string> parameterNames, IEnumerable<ParameterValuesPreset> parameterValuesPresets)
         {
             foreach (var item in parameterValuesPresets)
             {
-                var parameter = dbContext.Parameters.Where(p => p.Name == item.ParameterName).FirstOrDefault();
-                var user = dbContext.Users.Where(u => u.UserName == item.UserLogin).FirstOrDefault();
+                var parameter = dbContext.Parameters.AsNoTracking().Where(p => p.Name == item.ParameterName).FirstOrDefault();
+                var user = dbContext.Users.AsNoTracking().Where(u => u.UserName == item.UserLogin).FirstOrDefault();
                 if (parameter != null && user != null)
                 {
                     var parameterValue = dbContext.ParameterValues.Where(x => x.UserId == user.Id && x.ParameterId == parameter.Id).FirstOrDefault();
                     if (parameterValue == null)
-                        dbContext.ParameterValues.Add(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = item.Value });
+                        await dbContext.ParameterValues.AddAsync(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = item.Value });
                     else if (parameterValue.Value == DefaultValue)
                         parameterValue.Value = item.Value;                        
+                    await dbContext.SaveChangesAsync();
                 }
             }
 
@@ -111,13 +119,17 @@ namespace KNI_D6_web.Model.Database.Initialization
             {
                 foreach (var name in parameterNames)
                 {
-                    var parameter = dbContext.Parameters.Where(p => p.Name == name).FirstOrDefault();
+                    var parameter = dbContext.Parameters.AsNoTracking().Where(p => p.Name == name).FirstOrDefault();
                     if (parameter != null)
-                        if (!dbContext.ParameterValues.Any(x => x.UserId == user.Id && x.ParameterId == parameter.Id))
-                            dbContext.ParameterValues.Add(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = DefaultValue });
+                    {
+                        if (!await dbContext.ParameterValues.AnyAsync(x => x.UserId == user.Id && x.ParameterId == parameter.Id))
+                        {
+                            await dbContext.ParameterValues.AddAsync(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = DefaultValue });
+                            await dbContext.SaveChangesAsync();
+                        }
+                    }
                 }
             }
-            dbContext.SaveChanges();
         }
     }
 }

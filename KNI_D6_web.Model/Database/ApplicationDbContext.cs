@@ -12,7 +12,6 @@ namespace KNI_D6_web.Model.Database
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         public DbSet<Parameter> Parameters { get; set; }
