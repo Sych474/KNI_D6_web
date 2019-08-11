@@ -1,14 +1,13 @@
 ﻿using KNI_D6_web.Model.Parameters;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KNI_D6_web.Model
 {
     public class User : IdentityUser
     {
+        public bool IsKniAdmin { get; set; } = false;
+
         public List<ParameterValue> ParameterValues { get; set; } = new List<ParameterValue>();
 
         public List<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
