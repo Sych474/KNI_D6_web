@@ -1,0 +1,38 @@
+﻿@model KNI_D6_web.ViewModels.Users.AdminsViewModel
+@using KNI_D6_web.Model;
+@{
+    ViewData["Title"] = "Наши админы";
+}
+
+@{
+    int maxCardsInRow = 3;
+    int cardRows = (int)Math.Ceiling(Model.Admins.Count() / (double)maxCardsInRow);
+}
+<h1>Наши админы</h1>
+
+<div>
+    <div class="py-5">
+        <div class="container">
+            @for (int rowNumber = 0; rowNumber < cardRows; rowNumber++)
+            {
+                var cardsInRow = (rowNumber < cardRows - 1) ? maxCardsInRow : Model.Admins.Count() % maxCardsInRow;
+                <div class="row hidden-md-up">
+                    @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
+                        {
+                            var currentUser = Model.Admins.ElementAt(rowNumber * maxCardsInRow + columnNumber);
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@currentUser.UserName</h5>
+                                    <p class="card-text">@currentUser.Position.GetDescription()</p>
+                                    <a class="btn btn-primary" asp-controller="Users" asp-action="UserDetails" asp-route-id="@currentUser.Id">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            <br>
+            }
+        </div>
+    </div>
+</div>

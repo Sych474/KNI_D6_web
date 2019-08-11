@@ -15,11 +15,6 @@ namespace KNI_D6_web.Controllers
             return View();
         }
 
-        public IActionResult AdminsList()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
