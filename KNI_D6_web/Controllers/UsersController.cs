@@ -72,9 +72,57 @@ namespace KNI_D6_web.Controllers
         }
 
         [Route("Admins")]
-        public IActionResult AdminsList()
+        public async Task<IActionResult> Admins()
         {
-            return View();
+            var admins = await dbContext.Users.Where(u => u.IsKniAdmin).ToListAsync();
+            //For test
+            var sych = await dbContext.Users.Where(u => u.UserName == "sych").FirstOrDefaultAsync();
+            admins = new List<User>()
+            {
+                new User()
+                {
+                    UserName = "Свят",
+                    Id = sych.Id,
+                    Position = UserPosition.Chairman
+                },
+                new User()
+                {
+                    UserName = "Юра",
+                    Id = sych.Id,
+                    Position = UserPosition.Secretary
+                },
+                new User()
+                {
+                    UserName = "Саша Хляпов",
+                    Id = sych.Id,
+                    Position = UserPosition.Admin
+                },
+                new User()
+                {
+                    UserName = "Саша Васильев",
+                    Id = sych.Id,
+                    Position = UserPosition.Admin
+                },
+                new User()
+                {
+                    UserName = "Ратибор",
+                    Id = sych.Id,
+                    Position = UserPosition.Admin
+                },
+                new User()
+                {
+                    UserName = "Катя",
+                    Id = sych.Id,
+                    Position = UserPosition.Admin
+                },
+                new User()
+                {
+                    UserName = "Вит?",
+                    Id = sych.Id,
+                    Position = UserPosition.Admin
+                },
+            };
+            return View(new AdminsViewModel() { Admins = admins });
         }
 
         private IEnumerable<UserDetailsEventViewModel> CreateEventViewModelsForUser(IEnumerable<Event> events, User user)
