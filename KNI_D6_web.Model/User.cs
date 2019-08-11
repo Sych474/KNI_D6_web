@@ -8,6 +8,8 @@ namespace KNI_D6_web.Model
     {
         public bool IsKniAdmin { get; set; } = false;
 
+        public UserPosition Position { get; set; }
+
         public List<ParameterValue> ParameterValues { get; set; } = new List<ParameterValue>();
 
         public List<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
