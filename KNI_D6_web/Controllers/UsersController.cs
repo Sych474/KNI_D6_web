@@ -71,6 +71,12 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [Route("Admins")]
+        public IActionResult AdminsList()
+        {
+            return View();
+        }
+
         private IEnumerable<UserDetailsEventViewModel> CreateEventViewModelsForUser(IEnumerable<Event> events, User user)
         {
             var result = new List<UserDetailsEventViewModel>();
