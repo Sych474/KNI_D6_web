@@ -1,0 +1,48 @@
+﻿@model KNI_D6_web.Model.NewsPost
+
+@{
+    ViewData["Title"] = "Удаление новости";
+}
+
+<h1>Удаление новости</h1>
+
+<h3>Вы уверены что хотите удалить эту новость? </h3>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Дата публикации
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PublicationDate)
+        </dd>
+        <dt class="col-sm-2">
+            Заголовок
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Article)
+        </dd>
+        <dt class="col-sm-2">
+            Текст
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Text)
+        </dd>
+        <dt class="col-sm-2">
+            Автор
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Author.UserName)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+    </form>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary mt-3" asp-action="Index">К списку новостей</a>
+</div>
