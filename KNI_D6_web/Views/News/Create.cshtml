@@ -1,0 +1,34 @@
+﻿@model KNI_D6_web.Model.NewsPost
+
+@{
+    ViewData["Title"] = "Новый пост";
+}
+
+<h1>Создание нового новостного поста</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Article" class="control-label">Заголовок</label>
+                <input asp-for="Article" class="form-control" />
+                <span asp-validation-for="Article" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Text" class="control-label">Текст</label>
+                <input asp-for="Text" class="form-control" />
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку новостей</a>
+</div>
+
