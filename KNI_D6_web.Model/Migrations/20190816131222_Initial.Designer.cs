@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190809152640_initial")]
-    partial class initial
+    [Migration("20190816131222_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -72,7 +72,7 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<string>("AuthorId")
                         .IsRequired();
 
-                    b.Property<int>("PublicationDate");
+                    b.Property<DateTime>("PublicationDate");
 
                     b.Property<string>("Text")
                         .IsRequired();
@@ -127,6 +127,8 @@ namespace KNI_D6_web.Model.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<bool>("IsKniAdmin");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
@@ -142,6 +144,8 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<string>("PhoneNumber");
 
                     b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<int>("Position");
 
                     b.Property<string>("SecurityStamp");
 

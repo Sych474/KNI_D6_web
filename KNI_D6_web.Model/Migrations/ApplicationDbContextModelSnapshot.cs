@@ -70,7 +70,7 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<string>("AuthorId")
                         .IsRequired();
 
-                    b.Property<int>("PublicationDate");
+                    b.Property<DateTime>("PublicationDate");
 
                     b.Property<string>("Text")
                         .IsRequired();

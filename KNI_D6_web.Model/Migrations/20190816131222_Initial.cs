@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KNI_D6_web.Model.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,7 +53,9 @@ namespace KNI_D6_web.Model.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    IsKniAdmin = table.Column<bool>(nullable: false),
+                    Position = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,7 +201,7 @@ namespace KNI_D6_web.Model.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    PublicationDate = table.Column<int>(nullable: false),
+                    PublicationDate = table.Column<DateTime>(nullable: false),
                     Article = table.Column<string>(nullable: false),
                     Text = table.Column<string>(nullable: false),
                     AuthorId = table.Column<string>(nullable: false)

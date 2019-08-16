@@ -9,7 +9,7 @@ namespace KNI_D6_web.Model
     {
         public int Id { get; set; }
 
-        public int PublicationDate { get; set; }
+        public DateTime PublicationDate { get; set; }
 
         public string Article { get; set; }
 
