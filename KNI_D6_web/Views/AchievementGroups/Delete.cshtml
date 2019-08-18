@@ -1,0 +1,28 @@
+﻿@model KNI_D6_web.Model.Achievements.AchievementsGroup
+
+@{
+    ViewData["Title"] = "Удаление группы достижений";
+}
+
+<h1>Удаление группы достижений</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Название
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+    </form>
+</div>
+
+<div class="mt-2">
+    <a class="btn btn-outline-primary" asp-action="Index">К списку групп достижений</a>
+</div>
