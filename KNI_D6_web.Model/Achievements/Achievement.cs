@@ -6,7 +6,11 @@ namespace KNI_D6_web.Model.Achievements
     {
         public int Id { get; set; }
 
-        public int GroupId { get; set; } = 0;
+        public int AchievementsGroupId { get; set; }
+
+        public AchievementsGroup AchievementGroup { get; set; }
+
+        public int NumberInGroup { get; set; } 
 
         public string Name { get; set; }
 

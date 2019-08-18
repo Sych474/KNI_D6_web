@@ -7,7 +7,7 @@ namespace KNI_D6_web.Model.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "GroupId",
+                name: "AchievementsGroupId",
                 table: "Achievements",
                 nullable: false,
                 defaultValue: 0);
@@ -16,7 +16,7 @@ namespace KNI_D6_web.Model.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "GroupId",
+                name: "AchievementsGroupId",
                 table: "Achievements");
         }
     }
