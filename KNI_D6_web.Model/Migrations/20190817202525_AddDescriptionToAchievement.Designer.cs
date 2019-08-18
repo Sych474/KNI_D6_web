@@ -3,15 +3,17 @@ using System;
 using KNI_D6_web.Model.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190817202525_AddDescriptionToAchievement")]
+    partial class AddDescriptionToAchievement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,8 +44,6 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<int?>("AchievementValue");
 
                     b.Property<string>("Description");
-
-                    b.Property<int>("GroupId");
 
                     b.Property<string>("Name");
 
