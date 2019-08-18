@@ -14,7 +14,6 @@ namespace KNI_D6_web.Model.Database.Initialization
     {
         private static readonly int DefaultValue = 0;
 
-
         public static async Task InitializeDatabase(ApplicationDbContext dbContext, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, DbInitializationConfiguration configuration)
         {
             await AddUserRoles(roleManager);
@@ -24,10 +23,6 @@ namespace KNI_D6_web.Model.Database.Initialization
             await AddParameters(dbContext, configuration.Parameters);
 
             await AddParameterValues(dbContext, configuration.Parameters, configuration.ParameterValuesPresets);
-
-            await AddAchievements(dbContext, configuration.Achievements);
-
-            await AddUserAchievements(dbContext, configuration.UserAchievementsPresets);
         }
 
         private static async Task AddAdminUser(UserManager<User> userManager, string adminLogin, string adminPassword, string adminEmail)
@@ -54,35 +49,6 @@ namespace KNI_D6_web.Model.Database.Initialization
             {
                 if (!await roleManager.RoleExistsAsync(item))
                     await roleManager.CreateAsync(new IdentityRole(item));
-            }
-        }
-
-        private static async Task AddUserAchievements(ApplicationDbContext dbContext, IEnumerable<UserAchievementsPreset> userAchievementsPresets)
-        {
-            foreach (var item in userAchievementsPresets)
-            {
-                var achievement = dbContext.Achievements.AsNoTracking().Where(p => p.Name == item.AchievementName).FirstOrDefault();
-                var user = dbContext.Users.AsNoTracking().Where(u => u.UserName == item.UserLogin).FirstOrDefault();
-                if (achievement != null && user != null)
-                {
-                    if (!await dbContext.UserAchievements.AnyAsync(x => x.AchievementId == achievement.Id && x.UserId == user.Id))
-                    {
-                        await dbContext.UserAchievements.AddAsync(new UserAchievement() { UserId = user.Id, AchievementId = achievement.Id });
-                        await dbContext.SaveChangesAsync();
-                    }
-                }
-            }
-        }
-
-        private static async Task AddAchievements(ApplicationDbContext dbContext, IEnumerable<string> achievementNames)
-        {
-            foreach (var name in achievementNames)
-            {
-                if (!await dbContext.Achievements.AnyAsync(x => x.Name == name))
-                {
-                    await dbContext.Achievements.AddAsync(new Achievement() { Name = name });
-                    await dbContext.SaveChangesAsync();
-                }
             }
         }
 
