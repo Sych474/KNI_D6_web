@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
+using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Database.Initialization;
 using KNI_D6_web.Model.Database.Initialization.Configuration;
@@ -48,6 +49,8 @@ namespace KNI_D6_web
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddTransient<IAchievementsCalculator, AchievementsCalculator>();
+            services.AddTransient<IAchievementsManager, AchievementsManager>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
