@@ -15,17 +15,17 @@ namespace KNI_D6_web.Controllers
     [Authorize(Roles = UserRoles.AdminRole)]
     public class AchievementGroupsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext dbContext;
 
         public AchievementGroupsController(ApplicationDbContext context)
         {
-            _context = context;
+            dbContext = context;
         }
 
         // GET: AchievementGroups
         public async Task<IActionResult> Index()
         {
-            return View(await _context.AchievementGroups.ToListAsync());
+            return View(await dbContext.AchievementGroups.ToListAsync());
         }
 
 
@@ -41,8 +41,8 @@ namespace KNI_D6_web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(achievementGroup);
-                await _context.SaveChangesAsync();
+                dbContext.Add(achievementGroup);
+                await dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(achievementGroup);
@@ -56,7 +56,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var achievementGroup = await _context.AchievementGroups.FindAsync(id);
+            var achievementGroup = await dbContext.AchievementGroups.FindAsync(id);
             if (achievementGroup == null)
             {
                 return NotFound();
@@ -80,8 +80,8 @@ namespace KNI_D6_web.Controllers
             {
                 try
                 {
-                    _context.Update(achievementGroup);
-                    await _context.SaveChangesAsync();
+                    dbContext.Update(achievementGroup);
+                    await dbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -107,7 +107,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var achievementGroup = await _context.AchievementGroups
+            var achievementGroup = await dbContext.AchievementGroups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (achievementGroup == null)
             {
@@ -122,15 +122,15 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var achievementGroup = await _context.AchievementGroups.FindAsync(id);
-            _context.AchievementGroups.Remove(achievementGroup);
-            await _context.SaveChangesAsync();
+            var achievementGroup = await dbContext.AchievementGroups.FindAsync(id);
+            dbContext.AchievementGroups.Remove(achievementGroup);
+            await dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AchievementGroupExists(int id)
         {
-            return _context.AchievementGroups.Any(e => e.Id == id);
+            return dbContext.AchievementGroups.Any(e => e.Id == id);
         }
     }
 }

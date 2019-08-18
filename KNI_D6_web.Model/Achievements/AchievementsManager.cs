@@ -8,8 +8,8 @@ namespace KNI_D6_web.Model.Achievements
 {
     public class AchievementsManager : IAchievementsManager
     {
-        private ApplicationDbContext dbContext;
-        private IAchievementsCalculator achievementsCalculator;
+        private readonly ApplicationDbContext dbContext;
+        private readonly IAchievementsCalculator achievementsCalculator;
 
         public AchievementsManager(ApplicationDbContext dbContext, IAchievementsCalculator achievementsCalculator)
         {

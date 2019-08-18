@@ -13,15 +13,15 @@ namespace KNI_D6_web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly UserManager<User> userManager;
+        private readonly SignInManager<User> signInManager;
+        private readonly ApplicationDbContext dbContext;
 
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext dbContext)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _dbContext = dbContext;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.dbContext = dbContext;
         }
 
         [HttpGet]
@@ -48,15 +48,15 @@ namespace KNI_D6_web.Controllers
                     UserName = model.Login,
                 };
 
-                var identityResult = await _userManager.CreateAsync(user, model.Password);
+                var identityResult = await userManager.CreateAsync(user, model.Password);
                 if (identityResult.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, false);
+                    await signInManager.SignInAsync(user, false);
 
-                    var currentUser = await _userManager.FindByNameAsync(model.Login);
-                    foreach (var parameter in _dbContext.Parameters)
-                        _dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = currentUser.Id, Value = 0 });
-                    await _dbContext.SaveChangesAsync();
+                    var currentUser = await userManager.FindByNameAsync(model.Login);
+                    foreach (var parameter in dbContext.Parameters)
+                        dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = currentUser.Id, Value = 0 });
+                    await dbContext.SaveChangesAsync();
 
                     result = RedirectToAction("Index", "Home");
                 }
@@ -78,7 +78,7 @@ namespace KNI_D6_web.Controllers
             IActionResult result = View(model);
             if (ModelState.IsValid)
             {
-                var signInResult = await _signInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, false);
+                var signInResult = await signInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, false);
                 if (signInResult.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))                
@@ -96,7 +96,7 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
     }
