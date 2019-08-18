@@ -1,0 +1,60 @@
+﻿@model KNI_D6_web.ViewModels.Achievements.EditAchievementViewModel
+@using KNI_D6_web.Model.Achievements;
+@{
+    ViewData["Title"] = "Изменение достижения";
+}
+
+<h1>Изменение достижения</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Название</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Описание</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AchievementsGroupId" class="control-label">Группа достижений</label>
+                <select asp-for="AchievementsGroupId" class="form-control" asp-items="ViewBag.AchievementsGroupId"></select>
+                <span asp-validation-for="AchievementsGroupId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumberInGroup" class="control-label">Номер в группе</label>
+                <input asp-for="NumberInGroup" class="form-control" />
+                <span asp-validation-for="NumberInGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AchievementType" class="control-label">Тип достижения</label>
+                <select asp-for="AchievementType" asp-items="Html.GetEnumSelectList<AchievementType>()" class="form-control"></select>
+                <span asp-validation-for="AchievementType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AchievementValue" class="control-label">Значение параметра для получения достижения</label>
+                <input asp-for="AchievementValue" class="form-control" />
+                <span asp-validation-for="AchievementValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AchievementParameterId" class="control-label">Параметр</label>
+                <select asp-for="AchievementParameterId" class="form-control" asp-items="ViewBag.Parameters"><option>--- Без параметра ---</option></select>
+                <span asp-validation-for="AchievementParameterId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку достижений</a>
+</div>
+

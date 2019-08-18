@@ -1,0 +1,54 @@
+﻿@model KNI_D6_web.ViewModels.Achievements.CreateValueAchievementViewModel
+
+@{
+    ViewData["Title"] = "Добавление вычисляемого достижения";
+}
+
+<h1>Добавление вычисляемого достижения</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateValueAchievement">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AchievementName" class="control-label">Название</label>
+                <input asp-for="AchievementName" class="form-control" />
+                <span asp-validation-for="AchievementName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AhievementDescription" class="control-label">Описание</label>
+                <input asp-for="AhievementDescription" class="form-control" />
+                <span asp-validation-for="AhievementDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AchievementValue" class="control-label">Значение параметра для получения достижения</label>
+                <input asp-for="AchievementValue" class="form-control" />
+                <span asp-validation-for="AchievementValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ParameterId" class="control-label">Параметр</label>
+                <select asp-for="ParameterId" class="form-control" asp-items="Model.Parameters"></select>
+                <span asp-validation-for="ParameterId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GroupId" class="control-label">Группа</label>
+                <select asp-for="GroupId" class="form-control" asp-items="Model.AchievementGroups"></select>
+                <span asp-validation-for="GroupId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumberInGroup" class="control-label">Номер в группе</label>
+                <input asp-for="NumberInGroup" class="form-control" />
+                <span asp-validation-for="NumberInGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Добавить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку достижений</a>
+</div>
+
