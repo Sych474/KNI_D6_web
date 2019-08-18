@@ -1,4 +1,5 @@
-﻿using KNI_D6_web.Model.Parameters;
+﻿using KNI_D6_web.Model.Achievements;
+using KNI_D6_web.Model.Parameters;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -30,9 +31,23 @@ namespace KNI_D6_web.Model.Database
 
         public DbSet<UserAchievement> UserAchievements { get; set; }
 
+        public DbSet<AchievementsGroup> AchievementGroups { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            //Achievements
+            modelBuilder.Entity<Achievement>()
+                .HasOne(n => n.AchievementGroup)
+                .WithMany(u => u.Ahievements)
+                .HasForeignKey(n => n.AchievementsGroupId)
+                .HasPrincipalKey(u => u.Id)
+                .IsRequired();
+
+            //AchievementGroups
+            modelBuilder.Entity<AchievementsGroup>()
+                .HasKey(ag => ag.Id);
 
             //Parameters 
             modelBuilder.Entity<Parameter>()

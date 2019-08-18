@@ -3,15 +3,17 @@ using System;
 using KNI_D6_web.Model.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190817190138_UpdateAchievement")]
+    partial class UpdateAchievement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,31 +43,11 @@ namespace KNI_D6_web.Model.Migrations
 
                     b.Property<int?>("AchievementValue");
 
-                    b.Property<int>("AchievementsGroupId");
-
-                    b.Property<string>("Description");
-
                     b.Property<string>("Name");
 
-                    b.Property<int>("NumberInGroup");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AchievementsGroupId");
 
                     b.ToTable("Achievements");
-                });
-
-            modelBuilder.Entity("KNI_D6_web.Model.Achievements.AchievementsGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AchievementGroups");
                 });
 
             modelBuilder.Entity("KNI_D6_web.Model.Event", b =>
@@ -331,14 +313,6 @@ namespace KNI_D6_web.Model.Migrations
                     b.HasOne("KNI_D6_web.Model.Parameters.Parameter", "Parameter")
                         .WithMany("AchievementParameters")
                         .HasForeignKey("ParameterId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("KNI_D6_web.Model.Achievements.Achievement", b =>
-                {
-                    b.HasOne("KNI_D6_web.Model.Achievements.AchievementsGroup", "AchievementGroup")
-                        .WithMany("Ahievements")
-                        .HasForeignKey("AchievementsGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

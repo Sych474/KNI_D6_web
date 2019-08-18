@@ -1,0 +1,59 @@
+﻿@model KNI_D6_web.Model.Achievements.Achievement
+@using KNI_D6_web.Model;
+@{
+    ViewData["Title"] = "Подробнее о достижении";
+}
+
+<h1>Подробнее о достижении</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Группа достижений
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AchievementGroup.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Номер в группе
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NumberInGroup)
+        </dd>
+        <dt class="col-sm-2">
+            Название
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Описание
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            Тип достижения
+        </dt>
+        <dd class="col-sm-10">
+            @Model.AchievementType.GetDescription()
+        </dd>
+        <dt class="col-sm-2">
+            Связанный параметр
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.AchievementParameters.Any() ? Model.AchievementParameters.First().Parameter.Name: "Нет связанного параметра")
+        </dd>
+        <dt class="col-sm-2">
+            Значение параметра для получения достижения
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.AchievementValue.HasValue ? Model.AchievementValue.Value.ToString() : "Нет значения")
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Изменить</a>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку достижений</a>
+</div>

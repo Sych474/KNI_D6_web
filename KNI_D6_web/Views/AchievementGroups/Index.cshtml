@@ -1,0 +1,42 @@
+﻿@model IEnumerable<KNI_D6_web.Model.Achievements.AchievementsGroup>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Группы достижений</h1>
+
+<p>
+    <a class="btn btn-outline-primary m-2" asp-action="Create">Добавить новую группу</a>
+</p>
+<div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Название
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
+                        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="Index">К списку достижений</a>
+
+</div>
