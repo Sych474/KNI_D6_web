@@ -1,10 +1,17 @@
 ﻿@model KNI_D6_web.ViewModels.Users.UserDetailsViewModel
+@using KNI_D6_web.Model;
 @{
     ViewData["Title"] = "О игроке";
 }
 
 <h1>О игроке @Model.User.UserName</h1>
-
+<div>
+    <h3>Статус в клубе: @Model.User.Position.GetDescription()</h3>
+    @if (User.IsInRole(UserRoles.Admin))
+    {
+        <a class="btn btn-outline-primary" asp-controller="Users" asp-action="Edit" asp-route-id="@Model.User.Id"></a>
+    }
+</div>
 <div>
     <table class="table table-hover">
         <tbody>
@@ -13,6 +20,33 @@
                 <tr>
                     <td scope="row">@item.Parameter.Name </td>
                     <td>@item.Value </td>
+                    <td>
+                        <a class="btn btn-success"
+                           asp-controller="Parameters"
+                           asp-action="IncrementParameterValue"
+                           asp-route-parameterId="@item.ParameterId"
+                           asp-route-userId="@Model.User.Id">
+                            +
+                        </a>
+
+                        @if (item.Value == 0)
+                        {
+                            Html.Raw("disabled");
+                            <button type="button" class="btn btn-danger" disabled>-</button>
+                        }
+                        else
+                        {
+                            Html.Raw("disabled");
+                            <a class="btn btn-danger"
+                               asp-controller="Parameters"
+                               asp-action="DecrementParameterValue"
+                               asp-route-parameterId="@item.ParameterId"
+                               asp-route-userId="@Model.User.Id">
+                                -
+                            </a>
+                        }
+                    </td>
+
                 </tr>
             }
         </tbody>

@@ -72,7 +72,7 @@ namespace KNI_D6_web.Controllers
         [Route("Admins")]
         public async Task<IActionResult> Admins()
         {
-            var admins = await dbContext.Users.Where(u => u.IsKniAdmin).ToListAsync();
+            var admins = await dbContext.Users.Where(u => u.Position == UserPosition.Admin || u.Position == UserPosition.Secretary || u.Position == UserPosition.Chairman).ToListAsync();
             //For test
             var sych = await dbContext.Users.Where(u => u.UserName == "sych").FirstOrDefaultAsync();
             admins = new List<User>()

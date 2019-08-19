@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.AdminRole)]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AchievementsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -29,7 +29,7 @@ namespace KNI_D6_web.Controllers
         {
             var viewModel = new AchievementsViewModel()
             {
-                IsAdmin = User.IsInRole(UserRoles.AdminRole),
+                IsAdmin = User.IsInRole(UserRoles.Admin),
                 AchievementsInGroups = await GetAchievementsInGroups()
             };
             return View(viewModel);

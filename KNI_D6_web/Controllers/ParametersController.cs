@@ -9,7 +9,7 @@ using KNI_D6_web.Model;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.AdminRole)]
+    [Authorize(Roles = UserRoles.Admin)]
     public class ParametersController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -117,8 +117,43 @@ namespace KNI_D6_web.Controllers
         {
             var parameter = await dbContext.Parameters.FindAsync(id);
             dbContext.Parameters.Remove(parameter);
+            dbContext.ParameterValues.RemoveRange(dbContext.ParameterValues.Where(pv => pv.ParameterId == id));
             await dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> IncrementParameterValue(int parameterId, string userId)
+        {
+            IActionResult result = NotFound(parameterId);
+
+            var parameterValue = await dbContext.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
+            if (parameterValue != null)
+            {
+                parameterValue.Value++;
+                dbContext.ParameterValues.Update(parameterValue);
+
+                await dbContext.SaveChangesAsync();
+
+                result = Redirect($"/Users/{userId}");
+            }
+            return result;
+        }
+
+        public async Task<IActionResult> DecrementParameterValue(int parameterId, string userId)
+        {
+            IActionResult result = NotFound(parameterId);
+
+            var parameterValue = await dbContext.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
+            if (parameterValue != null)
+            {
+                parameterValue.Value--;
+                dbContext.ParameterValues.Update(parameterValue);
+
+                await dbContext.SaveChangesAsync();
+
+                result = Redirect($"/Users/{userId}");
+            }
+            return result;
         }
 
         private bool ParameterExists(int id)

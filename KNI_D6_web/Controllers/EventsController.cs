@@ -9,7 +9,7 @@ using KNI_D6_web.ViewModels.Events;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.AdminRole)]
+    [Authorize(Roles = UserRoles.Admin)]
     public class EventsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -26,7 +26,7 @@ namespace KNI_D6_web.Controllers
             var viewModel = new EventsViewModel()
             {
                 Events = await dbContext.Events.OrderBy(x => x.Date).ToListAsync(),
-                IsAdmin = this.User.IsInRole(UserRoles.AdminRole)
+                IsAdmin = this.User.IsInRole(UserRoles.Admin)
             };
             return View(viewModel);
         }

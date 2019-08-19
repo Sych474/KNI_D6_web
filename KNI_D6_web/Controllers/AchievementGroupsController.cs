@@ -9,7 +9,7 @@ using KNI_D6_web.Model;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.AdminRole)]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AchievementGroupsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
