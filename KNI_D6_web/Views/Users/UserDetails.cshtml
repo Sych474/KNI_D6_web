@@ -7,10 +7,6 @@
 <h1>О игроке @Model.User.UserName</h1>
 <div>
     <h3>Статус в клубе: @Model.User.Position.GetDescription()</h3>
-    @if (User.IsInRole(UserRoles.Admin))
-    {
-        <a class="btn btn-outline-primary" asp-controller="Users" asp-action="Edit" asp-route-id="@Model.User.Id"></a>
-    }
 </div>
 <div>
     <table class="table table-hover">
@@ -20,32 +16,37 @@
                 <tr>
                     <td scope="row">@item.Parameter.Name </td>
                     <td>@item.Value </td>
-                    <td>
-                        <a class="btn btn-success"
-                           asp-controller="Parameters"
-                           asp-action="IncrementParameterValue"
-                           asp-route-parameterId="@item.ParameterId"
-                           asp-route-userId="@Model.User.Id">
-                            +
-                        </a>
-
-                        @if (item.Value == 0)
+                        @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
                         {
-                            Html.Raw("disabled");
-                            <button type="button" class="btn btn-danger" disabled>-</button>
-                        }
-                        else
-                        {
-                            Html.Raw("disabled");
-                            <a class="btn btn-danger"
+                            <td>
+                            <a class="btn btn-success"
                                asp-controller="Parameters"
-                               asp-action="DecrementParameterValue"
+                               asp-action="IncrementParameterValue"
                                asp-route-parameterId="@item.ParameterId"
                                asp-route-userId="@Model.User.Id">
-                                -
+                                +
                             </a>
+
+                            @if (item.Value == 0)
+                            {
+                                Html.Raw("disabled");
+                                <button type="button" class="btn btn-danger" disabled>-</button>
+                            }
+                            else
+                            {
+                                Html.Raw("disabled");
+                                <a class="btn btn-danger"
+                                   asp-controller="Parameters"
+                                   asp-action="DecrementParameterValue"
+                                   asp-route-parameterId="@item.ParameterId"
+                                   asp-route-userId="@Model.User.Id">
+                                    -
+                                </a>
+                            }
+                        </td>
                         }
-                    </td>
+
+
 
                 </tr>
             }
@@ -74,9 +75,13 @@
             }
         </tbody>
     </table>
+    @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
+    {
+        <a class="btn btn-primary" asp-action="ManageAchievements" asp-route-userId="@Model.User.Id">Изменить достижения</a>
+    }
 </div>
 
-<div>
+<div class="mt-2">
     <h2>Посещаемость</h2>
     <table class="table table-hover">
         @if (Model.EventsViewModels.Any())

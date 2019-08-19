@@ -1,0 +1,44 @@
+﻿@model KNI_D6_web.ViewModels.Users.EditUserViewModel
+@using KNI_D6_web.Model;
+@{
+    ViewData["Title"] = "Изменение пользователя";
+}
+
+<h1>Изменение пользователя @Model.Login</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+
+
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label">Дата публикации</label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Login" class="control-label">Дата публикации</label>
+                <input asp-for="Login" class="form-control" />
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserPosition" class="control-label">Автор</label>
+                <select asp-for="UserPosition" class="form-control" asp-items="Html.GetEnumSelectList<UserPosition>()"></select>
+                <span asp-validation-for="UserPosition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserRole" class="control-label">Роль</label>
+                <select asp-for="UserRole" class="form-control" asp-items="Html.GetEnumSelectList<UserRoles.UserRolesEnum>()"></select>
+                <span asp-validation-for="UserRole" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку пользователей</a>
+</div>

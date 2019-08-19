@@ -1,4 +1,5 @@
 ﻿@model KNI_D6_web.ViewModels.Users.UsersViewModel
+@using KNI_D6_web.Model;
 @{
     ViewData["Title"] = "Наши игроки";
 }
@@ -24,6 +25,10 @@
                     <td>@user.UserAchievements.Count() </td>
                     <td>
                         <a class="btn btn-success ml-1" asp-controller="Users" asp-action="UserDetails" asp-route-id="@user.Id"> Подробнее </a>
+                        @if (User.IsInRole(UserRoles.Admin))
+                        {
+                            <a class="btn btn-warning ml-1" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id"> Изменить </a>
+                        }
                     </td>
                 </tr>
             }
