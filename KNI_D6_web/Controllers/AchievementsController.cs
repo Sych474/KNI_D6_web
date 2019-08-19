@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
-using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Achievements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
