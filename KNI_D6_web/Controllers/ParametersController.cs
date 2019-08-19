@@ -6,6 +6,7 @@ using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using KNI_D6_web.Model;
+using KNI_D6_web.Model.Achievements;
 
 namespace KNI_D6_web.Controllers
 {
@@ -13,10 +14,12 @@ namespace KNI_D6_web.Controllers
     public class ParametersController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly IAchievementsManager achievementsManager;
 
-        public ParametersController(ApplicationDbContext context)
+        public ParametersController(ApplicationDbContext dbContext, IAchievementsManager achievementsManager)
         {
-            dbContext = context;
+            this.dbContext = dbContext;
+            this.achievementsManager = achievementsManager;
         }
 
         public async Task<IActionResult> Index()
@@ -133,7 +136,7 @@ namespace KNI_D6_web.Controllers
                 dbContext.ParameterValues.Update(parameterValue);
 
                 await dbContext.SaveChangesAsync();
-
+                await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }
             return result;
@@ -150,7 +153,7 @@ namespace KNI_D6_web.Controllers
                 dbContext.ParameterValues.Update(parameterValue);
 
                 await dbContext.SaveChangesAsync();
-
+                await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }
             return result;
