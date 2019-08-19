@@ -1,0 +1,129 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using KNI_D6_web.Model.Database;
+using KNI_D6_web.Model.Parameters;
+using Microsoft.AspNetCore.Authorization;
+using KNI_D6_web.Model;
+
+namespace KNI_D6_web.Controllers
+{
+    [Authorize(Roles = UserRoles.AdminRole)]
+    public class ParametersController : Controller
+    {
+        private readonly ApplicationDbContext dbContext;
+
+        public ParametersController(ApplicationDbContext context)
+        {
+            dbContext = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            return View(await dbContext.Parameters.ToListAsync());
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name")] Parameter parameter)
+        {
+            IActionResult result = View(parameter);
+            if (ModelState.IsValid)
+            {
+                dbContext.Add(parameter);
+                
+                await dbContext.SaveChangesAsync();
+    
+                foreach (var user in dbContext.Users)
+                {
+                        dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = user.Id});
+                }
+                await dbContext.SaveChangesAsync();
+                result = RedirectToAction(nameof(Index));
+            }
+            return result;
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            IActionResult result = NotFound();
+            if (id != null)
+            {
+                var parameter = await dbContext.Parameters.FindAsync(id);
+                if (parameter != null)
+                    result = View(parameter);
+            }
+            return result;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Parameter parameter)
+        {
+            if (id != parameter.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    dbContext.Update(parameter);
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ParameterExists(parameter.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(parameter);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var parameter = await dbContext.Parameters
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (parameter == null)
+            {
+                return NotFound();
+            }
+
+            return View(parameter);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var parameter = await dbContext.Parameters.FindAsync(id);
+            dbContext.Parameters.Remove(parameter);
+            await dbContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ParameterExists(int id)
+        {
+            return dbContext.Parameters.Any(e => e.Id == id);
+        }
+    }
+}

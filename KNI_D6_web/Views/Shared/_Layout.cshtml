@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using KNI_D6_web.Model
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -36,10 +38,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">О клубе</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Наши игроки</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Игроки</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Admins">Наши админы</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Admins">Aдмины</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">Новости</a>
@@ -50,6 +52,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Мероприятия</a>
                         </li>
+                        @if (User.IsInRole(UserRoles.AdminRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Parameters" asp-action="Index">Параметры</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
