@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.ViewModels.News;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KNI_D6_web.Controllers
 {
+    [Authorize(Roles = UserRoles.AdminRole)]
     public class NewsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -20,6 +22,7 @@ namespace KNI_D6_web.Controllers
             dbContext = context;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var viewModel = new NewsViewModel()
