@@ -1,0 +1,35 @@
+﻿@model  KNI_D6_web.ViewModels.Events.EventVisitorsViewModel
+@{
+    ViewData["Title"] = "Посещаемость";
+}
+
+<h1>Посещаемость мероприятия</h1>
+
+<div>
+    <table class="table table-hover">
+        <tbody>
+            @foreach (var item in Model.EventVisitors)
+            {
+                <tr>
+                    <td>@item.Login</td>
+                    @if (item.IsVisited)
+                    {
+                        <td>
+                            <a class="btn btn-danger" asp-action="RemoveUserEvent" asp-route-eventId="@Model.EventId" asp-route-userId="@item.UserId">Удалить посещение</a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <a class="btn btn-success" asp-action="AddUserEvent" asp-route-eventId="@Model.EventId" asp-route-userId="@item.UserId">Добавить посещение</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary ml-1" asp-controller="Events" asp-action="Index"> К списку мероприятий </a>
+</div>

@@ -131,6 +131,7 @@ namespace KNI_D6_web.Controllers
             return View(new AdminsViewModel() { Admins = admins });
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(string id)
         {
@@ -154,6 +155,8 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [Route("Edit/{id}")]
         [ValidateAntiForgeryToken]
