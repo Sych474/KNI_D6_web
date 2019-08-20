@@ -29,7 +29,6 @@ namespace KNI_D6_web.Controllers
         {
             var viewModel = new AchievementsViewModel()
             {
-                IsAdmin = User.IsInRole(UserRoles.Admin),
                 AchievementsInGroups = await GetAchievementsInGroups()
             };
             return View(viewModel);

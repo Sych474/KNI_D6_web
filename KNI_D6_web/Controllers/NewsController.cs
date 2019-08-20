@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    [Authorize(Roles = UserRoles.AdminAndModerator)]
     public class NewsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -29,7 +29,6 @@ namespace KNI_D6_web.Controllers
                 NewsPosts = await dbContext.NewsPosts
                     .Include(u => u.Author)
                     .OrderByDescending(x => x.PublicationDate).ToListAsync(),
-                IsAdmin = this.User.IsInRole(UserRoles.Admin)
             };
             return View(viewModel);
         }

@@ -1,4 +1,5 @@
 ﻿@model KNI_D6_web.ViewModels.Achievements.AchievementsViewModel
+@using KNI_D6_web.Model;
 @{
     ViewData["Title"] = "Достижения";
 }
@@ -6,13 +7,13 @@
 
 <h1>Достижения</h1>
 
-@if (Model.IsAdmin)
+@if (User.IsInRole(UserRoles.Admin))
 {
-<div class="text-center">
-    <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateValueAchievement">Добавить вычисляемое достижение</a>
-    <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateCustomAchievement">Добавить невычисляемое достижение</a>
-    <a class="btn btn-outline-primary m-2" asp-controller="AchievementGroups" asp-action="Index">Группы достижений</a>
-</div>
+    <div class="text-center">
+        <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateValueAchievement">Добавить вычисляемое достижение</a>
+        <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateCustomAchievement">Добавить невычисляемое достижение</a>
+        <a class="btn btn-outline-primary m-2" asp-controller="AchievementGroups" asp-action="Index">Группы достижений</a>
+    </div>
 }
 
 <div>
@@ -29,7 +30,7 @@
                                 <h5 class="mt-0 mb-1">@item.Name</h5>
                                 @item.Description
                                 <br />
-                                @if (Model.IsAdmin)
+                                @if (User.IsInRole(UserRoles.Admin))
                                 {
                                     <div class="mt-1">
                                         <a class="btn btn-sm btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>

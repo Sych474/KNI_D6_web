@@ -125,6 +125,7 @@ namespace KNI_D6_web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = UserRoles.AdminAndModerator)]
         public async Task<IActionResult> IncrementParameterValue(int parameterId, string userId)
         {
             IActionResult result = NotFound(parameterId);
@@ -142,6 +143,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [Authorize(Roles = UserRoles.AdminAndModerator)]
         public async Task<IActionResult> DecrementParameterValue(int parameterId, string userId)
         {
             IActionResult result = NotFound(parameterId);
