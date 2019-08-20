@@ -63,6 +63,10 @@
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="m-2 text-success text-md-center">@User.Identity.Name</li>
+                    }
                     <li class="nav-item">
                         @if (User.Identity.IsAuthenticated)
                         {
