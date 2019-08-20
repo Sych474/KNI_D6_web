@@ -45,9 +45,6 @@
                             }
                         </td>
                         }
-
-
-
                 </tr>
             }
         </tbody>
@@ -56,25 +53,31 @@
 
 <div>
     <h2>Достижения </h2>
-    <table class="table table-hover">
-        <tbody>
-            @if (Model.User.UserAchievements.Any())
+
+    @if (Model.User.UserAchievements.Any())
+    {
+    <div class="container rounded rounded-lg m-2 ">
+        <ul class="list-unstyled">
+            @foreach (var item in Model.User.UserAchievements)
             {
-                @foreach (var item in Model.User.UserAchievements)
-                {
-                    <tr>
-                        <td>@item.Achievement.Name</td>
-                    </tr>
-                }
+                <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
+                    <!--<img src="..." class="mr-3" alt="...">-->
+                    <div class="media-body">
+                        <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
+                        @item.Achievement.Description
+                        <br />
+                    </div>
+                </li>
+
             }
-            else
-            {
-                <tr class="table-danger">
-                    <td>Достижений пока нет, но скоро будут!</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        </ul>
+    </div>
+    }
+    else
+    {
+        <h5>Достижений пока нет, но скоро будут!</h5>
+    }
+
     @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
     {
         <a class="btn btn-primary" asp-action="ManageAchievements" asp-route-userId="@Model.User.Id">Изменить достижения</a>
