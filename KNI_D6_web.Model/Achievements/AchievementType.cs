@@ -5,10 +5,10 @@ namespace KNI_D6_web.Model.Achievements
 {
     public enum AchievementType
     {
-        [Description("Вычисляемое"), Display(Name = "Вычисляемое")]
+        [Description("Невычисляемое"), Display(Name = "Невычисляемое")]
         Custom = 0,
 
-        [Description("Невычисляемое"), Display(Name = "Невычисляемое")]
+        [Description("Вычисляемое"), Display(Name = "Вычисляемое")]
         Calculated = 1
     }
 }

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using KNI_D6_web.Model
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -36,10 +38,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">О клубе</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Наши игроки</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Игроки</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Admins">Наши админы</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Admins">Aдмины</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">Новости</a>
@@ -50,11 +52,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Мероприятия</a>
                         </li>
+                        @if (User.IsInRole(UserRoles.Admin))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Parameters" asp-action="Index">Параметры</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="m-2 text-success text-md-center">@User.Identity.Name</li>
+                    }
                     <li class="nav-item">
                         @if (User.Identity.IsAuthenticated)
                         {

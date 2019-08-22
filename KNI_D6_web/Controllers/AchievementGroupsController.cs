@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
@@ -12,7 +9,7 @@ using KNI_D6_web.Model;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.AdminRole)]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AchievementGroupsController : Controller
     {
         private readonly ApplicationDbContext dbContext;

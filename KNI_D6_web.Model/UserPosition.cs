@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
@@ -7,19 +8,19 @@ namespace KNI_D6_web.Model
 {
     public enum UserPosition
     {
-        [Description("Игрок")]
+        [Description("Игрок"), Display(Name = "Игрок")]
         Member = 0,
-        [Description("Почетный член КНИ")]
+        [Description("Почетный член КНИ"), Display(Name = "Почетный член КНИ")]
         HonoraryMember = 1,
-        [Description("Админ")]
+        [Description("Админ"), Display(Name = "Админ")]
         Admin = 2,
-        [Description("Сектерать")]
+        [Description("Сектерать"), Display(Name = "Сектерать")]
         Secretary = 3,
-        [Description("Председатель")]
+        [Description("Председатель"), Display(Name = "Председатель")]
         Chairman = 4
     }
 
-    public static class UserPositionExtention
+    public static class EnumExtention
     {
         public static string GetDescription(this Enum GenericEnum)
         {

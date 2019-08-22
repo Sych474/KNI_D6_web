@@ -4,14 +4,15 @@ using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
-using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Achievements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin)]
     public class AchievementsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -23,11 +24,11 @@ namespace KNI_D6_web.Controllers
             this.achievementsManager = achievementsManager;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var viewModel = new AchievementsViewModel()
             {
-                IsAdmin = User.IsInRole(UserRoles.AdminRole),
                 AchievementsInGroups = await GetAchievementsInGroups()
             };
             return View(viewModel);
@@ -104,6 +105,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -229,7 +231,6 @@ namespace KNI_D6_web.Controllers
         {
             return new SelectList(dbContext.AchievementGroups, "Id", "Name", currentId);
         }
-
 
         private async Task<IEnumerable<IOrderedEnumerable<Achievement>>> GetAchievementsInGroups()
         {

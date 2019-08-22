@@ -9,7 +9,5 @@ namespace KNI_D6_web.ViewModels.News
     public class NewsViewModel
     {
         public IEnumerable<NewsPost> NewsPosts { get; set; }
-
-        public bool IsAdmin { get; set; }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Parameters;

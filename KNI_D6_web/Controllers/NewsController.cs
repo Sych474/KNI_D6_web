@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.ViewModels.News;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KNI_D6_web.Controllers
 {
+    [Authorize(Roles = UserRoles.AdminAndModerator)]
     public class NewsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
@@ -20,6 +21,7 @@ namespace KNI_D6_web.Controllers
             dbContext = context;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var viewModel = new NewsViewModel()
@@ -27,7 +29,6 @@ namespace KNI_D6_web.Controllers
                 NewsPosts = await dbContext.NewsPosts
                     .Include(u => u.Author)
                     .OrderByDescending(x => x.PublicationDate).ToListAsync(),
-                IsAdmin = this.User.IsInRole(UserRoles.AdminRole)
             };
             return View(viewModel);
         }
