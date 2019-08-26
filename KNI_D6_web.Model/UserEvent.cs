@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace KNI_D6_web.Model
+﻿namespace KNI_D6_web.Model
 {
     public class UserEvent
     {

@@ -33,6 +33,17 @@ namespace KNI_D6_web.Controllers
             return View();
         }
 
+        [HttpGet("[controller]/{login}/ChangePassword")]
+        public IActionResult ChangePassword(string login)
+        {
+            IActionResult result = Forbid();
+            if (User.Identity.IsAuthenticated)
+                if (User.IsInRole(UserRoles.Admin) || User.Identity.Name == login)
+                    result = View(new ChangePasswordViewModel() { Login = login });
+            
+            return result;
+        }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -95,6 +106,24 @@ namespace KNI_D6_web.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost("[controller]/{login}/ChangePassword")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            IActionResult result = View(model);
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                var identityResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+                if (identityResult.Succeeded)
+                    result = RedirectToAction("Index", "Home");
+                else
+                    ModelState.AddModelError("", "Ошибка изменения пароля");
+            }
+            return result;
         }
     }
 }
