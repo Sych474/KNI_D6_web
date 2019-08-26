@@ -9,7 +9,6 @@ using KNI_D6_web.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Controllers
@@ -59,13 +58,13 @@ namespace KNI_D6_web.Controllers
                     IsAuthorizedUser = User.Identity.IsAuthenticated && (User.Identity.Name == user.UserName),
                     User = user,
                     EventsViewModels = CreateEventViewModelsForUser(await dbContext.Events.ToListAsync(), user).OrderBy(x => x.EventDate)
-                }) ;
+                });
             }
 
             return result;
         }
 
-        [Route("UserDetails/{login}")]
+        [HttpGet("UserDetails/{login}")]
         public async Task<IActionResult> UserDetailsByLogin(string login)
         {
             IActionResult result = BadRequest(login);
@@ -77,62 +76,16 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
-        [Route("Admins")]
+        [HttpGet("Admins")]
         public async Task<IActionResult> Admins()
         {
             var admins = await dbContext.Users.Where(u => u.Position == UserPosition.Admin || u.Position == UserPosition.Secretary || u.Position == UserPosition.Chairman).ToListAsync();
-            //For test
-            var sych = await dbContext.Users.Where(u => u.UserName == "sych").FirstOrDefaultAsync();
-            admins = new List<User>()
-            {
-                new User()
-                {
-                    UserName = "Свят",
-                    Id = sych.Id,
-                    Position = UserPosition.Chairman
-                },
-                new User()
-                {
-                    UserName = "Юра",
-                    Id = sych.Id,
-                    Position = UserPosition.Secretary
-                },
-                new User()
-                {
-                    UserName = "Саша Хляпов",
-                    Id = sych.Id,
-                    Position = UserPosition.Admin
-                },
-                new User()
-                {
-                    UserName = "Саша Васильев",
-                    Id = sych.Id,
-                    Position = UserPosition.Admin
-                },
-                new User()
-                {
-                    UserName = "Ратибор",
-                    Id = sych.Id,
-                    Position = UserPosition.Admin
-                },
-                new User()
-                {
-                    UserName = "Катя",
-                    Id = sych.Id,
-                    Position = UserPosition.Admin
-                },
-                new User()
-                {
-                    UserName = "Вит?",
-                    Id = sych.Id,
-                    Position = UserPosition.Admin
-                },
-            };
+
             return View(new AdminsViewModel() { Admins = admins });
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        [Route("Edit/{id}")]
+        [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(string id)
         {
             IActionResult result = NotFound();
@@ -157,8 +110,7 @@ namespace KNI_D6_web.Controllers
 
 
         [Authorize(Roles = UserRoles.Admin)]
-        [HttpPost]
-        [Route("Edit/{id}")]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("UserId,UserRole,UserPosition,Login")] EditUserViewModel viewModel)
         {
@@ -184,11 +136,11 @@ namespace KNI_D6_web.Controllers
         }
 
         [Authorize(Roles = UserRoles.AdminAndModerator)]
-        [Route("ManageAchievements/{userId}")]
+        [HttpGet("ManageAchievements/{userId}")]
         public async Task<IActionResult> ManageAchievements(string userId)
         {
             IActionResult result = NotFound(userId);
-            var user = await dbContext.Users.Include(u=> u.UserAchievements).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await dbContext.Users.Include(u => u.UserAchievements).FirstOrDefaultAsync(u => u.Id == userId);
             if (user != null)
             {
                 var viewModel = new ManageAchievementsViewModel()
@@ -203,7 +155,7 @@ namespace KNI_D6_web.Controllers
         }
 
         [Authorize(Roles = UserRoles.AdminAndModerator)]
-        [Route("{userId}/RemoveAchievement/{achievementId}")]
+        [HttpGet("{userId}/RemoveAchievement/{achievementId}")]
         public async Task<IActionResult> RemoveAchievement(string userId, int achievementId)
         {
             IActionResult result = NotFound();
@@ -216,7 +168,7 @@ namespace KNI_D6_web.Controllers
         }
 
         [Authorize(Roles = UserRoles.AdminAndModerator)]
-        [Route("{userId}/AddAchievement/{achievementId}")]
+        [HttpGet("{userId}/AddAchievement/{achievementId}")]
         public async Task<IActionResult> AddAchievement(string userId, int achievementId)
         {
             IActionResult result = NotFound();
@@ -226,6 +178,30 @@ namespace KNI_D6_web.Controllers
                     result = RedirectToAction(nameof(ManageAchievements), new { userId = userId });
             }
             return result;
+        }
+
+        [HttpGet("{id}/Delete")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Delete(string id)
+        {
+            IActionResult result = NotFound();
+            if (id != null)
+            {
+                var user = await dbContext.Users.FirstOrDefaultAsync(m => m.Id == id);
+                if (user != null)
+                    result = View(new DeleteUserViewModel() { Id = user.Id, Login = user.UserName });
+            }
+            return result;
+        }
+
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost("{id}/Delete"), ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            await userManager.DeleteAsync(user);   
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task UpdateUser(User user, EditUserViewModel viewModel)
