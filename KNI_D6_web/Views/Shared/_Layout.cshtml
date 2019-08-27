@@ -65,7 +65,9 @@
                 <ul class="navbar-nav ml-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="m-2 text-success text-md-center">@User.Identity.Name</li>
+                    <li class="nav-item">
+                        <a class="btn btn-success  ml-1" asp-controller="Users" asp-action="UserDetailsByLogin" asp-route-login="@User.Identity.Name">@User.Identity.Name</a>
+                    </li>
                     }
                     <li class="nav-item">
                         @if (User.Identity.IsAuthenticated)
