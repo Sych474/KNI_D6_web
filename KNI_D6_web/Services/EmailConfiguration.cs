@@ -9,5 +9,7 @@
         public string AdministrationEmailName { get; set; }
 
         public string HostEmail { get; set; }
+
+        public int HostPort { get; set; }
     }
 }

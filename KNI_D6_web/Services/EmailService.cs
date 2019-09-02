@@ -28,12 +28,8 @@ namespace KNI_D6_web.Services
 
             using (var client = new SmtpClient())
             {
-                //await client.ConnectAsync(config.HostEmail, 465, false);
-                await client.ConnectAsync("smtp.gmail.com", 587);
+                await client.ConnectAsync(config.HostEmail, config.HostPort);
 
-
-                // Note: since we don't have an OAuth2 token, disable
-                // the XOAUTH2 authentication mechanism.
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
                 await client.AuthenticateAsync(config.AdministrationEmail, config.AdministrationPassword);

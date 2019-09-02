@@ -8,6 +8,7 @@ using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Database.Initialization;
 using KNI_D6_web.Model.Database.Initialization.Configuration;
 using KNI_D6_web.Model.Parameters;
+using KNI_D6_web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +27,9 @@ namespace KNI_D6_web
             Configuration = configuration;
         }
 
+        private DbInitializationConfiguration DbInitializationConfiguration { get; set; } = new DbInitializationConfiguration();
+        private EmailConfiguration emailConfiguration { get; set; } = new EmailConfiguration();
 
-        private DbInitializationConfiguration dbInitializationConfiguration = new DbInitializationConfiguration();
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -40,7 +42,11 @@ namespace KNI_D6_web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            Configuration.GetSection("dbInitializationConfiguration").Bind(dbInitializationConfiguration);
+            services.Configure<EmailConfiguration>(options => Configuration.GetSection("EmailConfiguration").Bind(options));
+            var r = Configuration.GetSection("EmailConfiguration");
+            var rr = Configuration.GetSection("dbInitializationConfiguration");
+            Configuration.GetSection("dbInitializationConfiguration").Bind(DbInitializationConfiguration);
+            Configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
             services.Configure<DbInitializationConfiguration>(options => Configuration.GetSection("dbInitializationConfiguration").Bind(options));
 
             services.AddDbContextPool<ApplicationDbContext>(options =>
@@ -53,10 +59,12 @@ namespace KNI_D6_web
                 opts.Password.RequireUppercase = false; // требуются ли символы в верхнем регистре
                 opts.Password.RequireDigit = false; // требуются ли цифры
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddTransient<IAchievementsCalculator, AchievementsCalculator>();
             services.AddTransient<IAchievementsManager, AchievementsManager>();
+            services.AddTransient<IEmailService, EmailService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -93,7 +101,7 @@ namespace KNI_D6_web
             var dbContext = serviceProvider.GetService<ApplicationDbContext>();
             var userManager = serviceProvider.GetService<UserManager<User>>();
             var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
-            await DatabaseInitializer.InitializeDatabase(dbContext, userManager, roleManager, dbInitializationConfiguration);
+            await DatabaseInitializer.InitializeDatabase(dbContext, userManager, roleManager, DbInitializationConfiguration);
         }
     }
 }
