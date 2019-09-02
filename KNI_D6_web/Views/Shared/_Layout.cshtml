@@ -65,30 +65,31 @@
                 <ul class="navbar-nav ml-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="m-2 text-success text-md-center">@User.Identity.Name</li>
+                        <li class="nav-item">
+                            <a class="btn btn-success  ml-1" asp-controller="Users" asp-action="UserDetailsByLogin" asp-route-login="@User.Identity.Name">@User.Identity.Name</a>
+                        </li>
                     }
-                    <li class="nav-item">
-                        @if (User.Identity.IsAuthenticated)
-                        {
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
                             <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
                                 <button class="btn btn-outline-danger ml-1" type="submit">Logout</button>
                             </form>
-                        }
-                        else
-                        {
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
                             <form method="get" asp-area="" asp-controller="Account" asp-action="Login">
                                 <button class="btn btn-outline-success ml-1" type="submit">Login</button>
                             </form>
-                        }
-                    </li>
-                    <li>
-
-                    </li>
-                    <li class="nav-item">
-                        <form method="get" asp-area="" asp-controller="Account" asp-action="Register">
-                            <button class="btn btn-outline-primary ml-1" type="submit">Register</button>
-                        </form>
-                    </li>
+                        </li>
+                        <li class="nav-item">
+                            <form method="get" asp-area="" asp-controller="Account" asp-action="Register">
+                                <button class="btn btn-outline-primary ml-1" type="submit">Register</button>
+                            </form>
+                        </li>
+                    }
                 </ul>
             </div>
         </nav>

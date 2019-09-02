@@ -10,25 +10,15 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-
-
+            <input type="hidden" asp-for="UserId" class="form-control" />
+            <input type="hidden" asp-for="Login" class="form-control" />
             <div class="form-group">
-                <label asp-for="UserId" class="control-label">Дата публикации</label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Login" class="control-label">Дата публикации</label>
-                <input asp-for="Login" class="form-control" />
-                <span asp-validation-for="Login" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserPosition" class="control-label">Автор</label>
+                <label asp-for="UserPosition" class="control-label">Статус в клубе</label>
                 <select asp-for="UserPosition" class="form-control" asp-items="Html.GetEnumSelectList<UserPosition>()"></select>
                 <span asp-validation-for="UserPosition" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserRole" class="control-label">Роль</label>
+                <label asp-for="UserRole" class="control-label">Роль на сайте</label>
                 <select asp-for="UserRole" class="form-control" asp-items="Html.GetEnumSelectList<UserRoles.UserRolesEnum>()"></select>
                 <span asp-validation-for="UserRole" class="text-danger"></span>
             </div>

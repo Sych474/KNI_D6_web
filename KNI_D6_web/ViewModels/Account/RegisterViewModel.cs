@@ -4,23 +4,22 @@ namespace KNI_D6_web.ViewModels.Account
 {
     public class RegisterViewModel
     {
-        [Required]
-        [Display(Name = "Login")]
+        [Required(ErrorMessage = "Поле Login должно быть заполнено")]
         public string Login { get; set; }
 
-        [Required]
-        [Display(Name = "Email")]
+        [EmailAddress(ErrorMessage = "Введите корректный Email")]
+        [Required(ErrorMessage = "Поле Email должно быть заполнено")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле Пароль должно быть заполнено")]
+        [StringLength(100, ErrorMessage = "Пароль должен иметь не менее 5 символов", MinimumLength = 5)]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле Подтверждение пароля должно быть заполнено")]
+        [StringLength(100, ErrorMessage = "Пароль должен иметь не менее 5 символов", MinimumLength = 5)]
         [Compare("Password", ErrorMessage = "Пароли не совпадают!")]
         [DataType(DataType.Password)]
-        [Display(Name = "Подтверждение пароля")]
         public string PasswordConfirm { get; set; }
     }
 }

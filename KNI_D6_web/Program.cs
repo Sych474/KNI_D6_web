@@ -22,9 +22,10 @@ namespace KNI_D6_web
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.SetBasePath(Directory.GetCurrentDirectory());
-                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-                    config.AddJsonFile("initialization.json", optional: false, reloadOnChange: false);
+                    config.AddJsonFile("appsettings.json", optional: false);
+                    config.AddJsonFile("initialization.json", optional: false);
                     config.AddCommandLine(args);
+                    config.Build();
                 })
                 .UseStartup<Startup>();
     }

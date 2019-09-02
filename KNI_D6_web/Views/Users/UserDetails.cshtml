@@ -5,8 +5,18 @@
 }
 
 <h1>О игроке @Model.User.UserName</h1>
-<div>
+<div class="m-2">
     <h3>Статус в клубе: @Model.User.Position.GetDescription()</h3>
+</div>
+<div class="m-2">
+    @if (User.Identity.Name == Model.User.UserName || User.IsInRole(UserRoles.Admin))
+    {
+        <a class="btn btn-danger" asp-controller="Account" asp-action="ChangePassword" asp-route-login="@Model.User.UserName"> Изменить пароль </a>
+    }
+    @if (User.IsInRole(UserRoles.Admin))
+    {
+        <a class="btn btn-warning ml-1" asp-controller="Users" asp-action="Edit" asp-route-id="@Model.User.Id"> Настроить роли </a>
+    }
 </div>
 <div>
     <table class="table table-hover">
@@ -16,9 +26,9 @@
                 <tr>
                     <td scope="row">@item.Parameter.Name </td>
                     <td>@item.Value </td>
-                        @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
-                        {
-                            <td>
+                    @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
+                    {
+                        <td>
                             <a class="btn btn-success"
                                asp-controller="Parameters"
                                asp-action="IncrementParameterValue"
@@ -44,7 +54,7 @@
                                 </a>
                             }
                         </td>
-                        }
+                    }
                 </tr>
             }
         </tbody>
@@ -56,22 +66,22 @@
 
     @if (Model.User.UserAchievements.Any())
     {
-    <div class="container rounded rounded-lg m-2 ">
-        <ul class="list-unstyled">
-            @foreach (var item in Model.User.UserAchievements)
-            {
-                <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
-                    <!--<img src="..." class="mr-3" alt="...">-->
-                    <div class="media-body">
-                        <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
-                        @item.Achievement.Description
-                        <br />
-                    </div>
-                </li>
+        <div class="container rounded rounded-lg m-2 ">
+            <ul class="list-unstyled">
+                @foreach (var item in Model.User.UserAchievements)
+                {
+                    <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
+                        <!--<img src="..." class="mr-3" alt="...">-->
+                        <div class="media-body">
+                            <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
+                            @item.Achievement.Description
+                            <br />
+                        </div>
+                    </li>
 
-            }
-        </ul>
-    </div>
+                }
+            </ul>
+        </div>
     }
     else
     {

@@ -8,16 +8,14 @@ namespace KNI_D6_web.ViewModels.Account
 {
     public class LoginViewModel
     {
-        [Required]
-        [Display(Name = "Login")]
+        [Required(ErrorMessage = "Поле Login должно быть заполнено")]
         public string Login { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Поле Пароль должно быть заполнено")]
+        [StringLength(100, ErrorMessage = "Пароль должен иметь не менее 5 символов", MinimumLength = 5)]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
         public string Password { get; set; }
 
-        [Display(Name = "Запомнить?")]
         public bool RememberMe { get; set; }
 
         public string ReturnUrl { get; set; }
