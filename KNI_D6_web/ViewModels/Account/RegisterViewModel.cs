@@ -7,6 +7,7 @@ namespace KNI_D6_web.ViewModels.Account
         [Required(ErrorMessage = "Поле Login должно быть заполнено")]
         public string Login { get; set; }
 
+        [EmailAddress(ErrorMessage = "Введите корректный Email")]
         [Required(ErrorMessage = "Поле Email должно быть заполнено")]
         public string Email { get; set; }
 
