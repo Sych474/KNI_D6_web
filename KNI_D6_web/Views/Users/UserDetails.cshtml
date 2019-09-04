@@ -65,7 +65,7 @@
 
 <div>
     <h2>Достижения </h2>
-
+    <a class="btn btn-outline-primary" asp-controller="Achievements" asp-action="Progress" asp-route-login="@Model.User.UserName">Прогресс достижений</a>
     @if (Model.User.UserAchievements.Any())
     {
         <div class="container rounded rounded-lg m-2 ">

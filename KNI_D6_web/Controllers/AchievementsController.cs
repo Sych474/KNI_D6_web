@@ -5,35 +5,58 @@ using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.ViewModels.Achievements;
+using KNI_D6_web.ViewModels.AchievementsProgress;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    [Authorize]
     public class AchievementsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IAchievementsManager achievementsManager;
+        private readonly UserManager<User> userManager;
 
-        public AchievementsController(ApplicationDbContext dbContext, IAchievementsManager achievementsManager)
+        public AchievementsController(ApplicationDbContext dbContext, IAchievementsManager achievementsManager, UserManager<User> userManager)
         {
             this.dbContext = dbContext;
             this.achievementsManager = achievementsManager;
+            this.userManager = userManager;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var viewModel = new AchievementsViewModel()
+            IActionResult result;
+            if (User.Identity.IsAuthenticated)
             {
-                AchievementsInGroups = await GetAchievementsInGroups()
+                result = RedirectToAction(nameof(Progress), new { login = User.Identity.Name });
+            }
+            else
+            {
+                var viewModel = new AchievementsViewModel()
+                {
+                    AchievementsInGroups = await GetAchievementsInGroups()
+                };
+                result = View(viewModel);                
+            }
+            return result;
+        }
+
+        public async Task<IActionResult> Progress(string login)
+        {
+            var viewModel = new AchievementsProgressViewModel()
+            {
+                AchievementsProgressInGroups = await GetAchievementsProgressInGroups(login)
             };
             return View(viewModel);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult CreateCustomAchievement()
         {
             var viewModel = new CreateCustomAchievementViewModel()
@@ -44,6 +67,7 @@ namespace KNI_D6_web.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCustomAchievement
@@ -65,6 +89,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult CreateValueAchievement()
         {
             var viewModel = new CreateValueAchievementViewModel()
@@ -77,6 +102,7 @@ namespace KNI_D6_web.Controllers
         }
 
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateValueAchievement(
@@ -125,6 +151,7 @@ namespace KNI_D6_web.Controllers
             return View(achievement);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Edit(int? id)
         {
             IActionResult result = NotFound();
@@ -143,6 +170,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,AchievementParameterId")] EditAchievementViewModel viewModel)
@@ -185,6 +213,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -204,6 +233,7 @@ namespace KNI_D6_web.Controllers
             return View(achievement);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -237,6 +267,48 @@ namespace KNI_D6_web.Controllers
             var groups = await dbContext?.AchievementGroups?.Include(ag => ag.Ahievements)?.ToListAsync();
 
             return groups?.Select(g => g.Ahievements.OrderBy(a => a.NumberInGroup));
+        }
+
+        private async Task<IEnumerable<IOrderedEnumerable<AchievementProgressViewModel>>> GetAchievementsProgressInGroups(string login)
+        {
+            var user = await dbContext.Users
+                .Include(u => u.ParameterValues)
+                .Include(u => u.UserAchievements)
+                .FirstOrDefaultAsync(u => u.UserName == login);
+
+            var groups = await dbContext?.AchievementGroups?
+                .Include(ag => ag.Ahievements)?
+                .ThenInclude(a => a.AchievementParameters)?
+                .ThenInclude(ap => ap.Parameter)?
+                .ToListAsync();
+
+            var progressGroups = new List<IOrderedEnumerable<AchievementProgressViewModel>>();
+
+            foreach (var group in groups)
+            {
+                var progressGroup = new List<AchievementProgressViewModel>();
+                foreach (var achievement in group.Ahievements)
+                {
+                    var linkedParameter = achievement.AchievementParameters.FirstOrDefault()?.Parameter;
+                    var linkedParameterValue = user.ParameterValues.Where(pv => pv.ParameterId == linkedParameter?.Id).FirstOrDefault();
+
+                    var progress = new AchievementProgressViewModel()
+                    {
+                        AchievementId = achievement.Id,
+                        AchievementName = achievement.Name,
+                        AchievementDescription = achievement.Description,
+                        NumberInGroup = achievement.NumberInGroup,
+                        AchievementValue = achievement.AchievementValue,
+                        LinkedParameterName = linkedParameter?.Name,
+                        LinkedParameterValue = linkedParameterValue?.Value,
+                        IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == achievement.Id)
+                    };
+                    progressGroup.Add(progress);
+                }
+                progressGroups.Add(progressGroup.OrderBy(ap => ap.NumberInGroup));
+            }
+
+            return progressGroups;
         }
     }
 }

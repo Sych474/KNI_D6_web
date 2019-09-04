@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
+using KNI_D6_web.ViewModels.AchievementsProgress;
 using KNI_D6_web.ViewModels.Users;
 using KNI_D6_web.ViewModels.Visits;
 using Microsoft.AspNetCore.Authorization;
@@ -235,12 +236,12 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
-        private IEnumerable<AchievementViewModel> CreateAchievementsViewModel(User user)
+        private IEnumerable<AchievementProgressViewModel> CreateAchievementsViewModel(User user)
         {
-            return dbContext.Achievements.Select(a => new AchievementViewModel()
+            return dbContext.Achievements.Select(a => new AchievementProgressViewModel()
             {
-                Id = a.Id,
-                Name = a.Name,
+                AchievementId = a.Id,
+                AchievementName = a.Name,
                 IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == a.Id)
             });
         }
