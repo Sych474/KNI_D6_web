@@ -29,23 +29,23 @@
     <tbody>
         @foreach (var item in Model.Events)
         {
-            <tr class="table-@(item.Date < DateTime.Now?"secondary":"success")">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
-                <td>
-                    <a class="btn btn-primary ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
-                    @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
-                    {
-                        <a class="btn btn-warning ml-1" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
-                        <a class="btn btn-danger ml-1" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
-                        <a class="btn btn-secondary ml-1" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
-                    }
-                </td>
-            </tr>
+        <tr class="table-@(item.Date < DateTime.Now?"secondary":"success")">
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Date.ToShortDateString()
+            </td>
+            <td>
+                <a class="btn btn-primary ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+                {
+                    <a class="btn btn-warning ml-1" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                    <a class="btn btn-danger ml-1" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                    <a class="btn btn-secondary ml-1" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

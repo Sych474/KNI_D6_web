@@ -1,14 +1,13 @@
 ﻿using KNI_D6_web.Model;
+using KNI_D6_web.ViewModels.Visits;
 using System.Collections.Generic;
 
 namespace KNI_D6_web.ViewModels.Users
 {
     public class UserDetailsViewModel
     {
-        public bool IsAuthorizedUser { get; set; }
-
         public User User { get; set; }
 
-        public IEnumerable<UserDetailsEventViewModel> EventsViewModels { get; set; }
+        public IEnumerable<EventVisitViewModel> EventVisits { get; set; }
     }
 }

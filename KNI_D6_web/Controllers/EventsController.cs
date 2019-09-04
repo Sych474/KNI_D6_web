@@ -55,7 +55,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Date")] Event @event)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Date")] Event @event)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Date")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date")] Event @event)
         {
             if (id != @event.Id)
             {

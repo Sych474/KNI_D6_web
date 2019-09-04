@@ -4,25 +4,18 @@
     ViewData["Title"] = "Подробности о мероприятии";
 }
 
-<h1>Подробно о мероприятии</h1>
+<h1>@Model.Name</h1>
+<h4>@Model.Date.ToShortDateString()</h4>
 
 <div>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            Название
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            Дата и время проведения
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
+        <dd class="col-sm-10">
+            <h5>@Model.Description</h5>
         </dd>
     </dl>
 </div>
+
 <div>
     <a class="btn btn-outline-primary" asp-action="Index">К списку мероприятий</a>
 </div>

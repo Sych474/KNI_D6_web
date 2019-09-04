@@ -6,6 +6,7 @@ using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.ViewModels.Users;
+using KNI_D6_web.ViewModels.Visits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -53,11 +54,11 @@ namespace KNI_D6_web.Controllers
 
             if (user != null)
             {
+                var evnts = await dbContext.Events.ToListAsync();
                 result = View(new UserDetailsViewModel()
                 {
-                    IsAuthorizedUser = User.Identity.IsAuthenticated && (User.Identity.Name == user.UserName),
                     User = user,
-                    EventsViewModels = CreateEventViewModelsForUser(await dbContext.Events.ToListAsync(), user).OrderBy(x => x.EventDate)
+                    EventVisits = CreateEventVisitViewModelsForUser(evnts, user).OrderBy(x => x.Date)
                 });
             }
 
@@ -214,15 +215,21 @@ namespace KNI_D6_web.Controllers
             user.Position = viewModel.UserPosition;
         }
 
-        private IEnumerable<UserDetailsEventViewModel> CreateEventViewModelsForUser(IEnumerable<Event> events, User user)
+        private IEnumerable<EventVisitViewModel> CreateEventVisitViewModelsForUser(IEnumerable<Event> events, User user)
         {
-            var result = new List<UserDetailsEventViewModel>();
+            var result = new List<EventVisitViewModel>(events.Count());
 
             var visitedEventIds = user.UserEvents.Select(x => x.EventId);
 
             foreach (var item in events)
             {
-                result.Add(new UserDetailsEventViewModel(item, visitedEventIds.Contains(item.Id)));
+                result.Add(new EventVisitViewModel()
+                {
+                    Date = item.Date,
+                    EventId = item.Id,
+                    EventName = item.Name, 
+                    State = GetEventVisitState(item, visitedEventIds)
+                });
             }
 
             return result;
@@ -236,6 +243,18 @@ namespace KNI_D6_web.Controllers
                 Name = a.Name,
                 IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == a.Id)
             });
+        }
+
+        private EventVisitState GetEventVisitState(Event item, IEnumerable<int> visitedEventIds)
+        {
+            var result = EventVisitState.NotVisited;
+
+            if (item.Date.Date >= DateTime.Now.Date)
+                return EventVisitState.NotHappendYet;
+            else if (visitedEventIds.Contains(item.Id))
+                return EventVisitState.Visited;
+
+            return result;
         }
     }
 }
