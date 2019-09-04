@@ -1,5 +1,7 @@
 ﻿@model KNI_D6_web.ViewModels.Users.UserDetailsViewModel
 @using KNI_D6_web.Model;
+@using KNI_D6_web.ViewModels.Visits;
+
 @{
     ViewData["Title"] = "О игроке";
 }
@@ -97,14 +99,46 @@
 <div class="mt-2">
     <h2>Посещаемость</h2>
     <table class="table table-hover">
-        @if (Model.EventsViewModels.Any())
+        @if (Model.EventVisits.Any())
         {
-            @foreach (var item in Model.EventsViewModels)
+            if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin) )
             {
-                <tr class="@(item.IsVisited?"table-success":"table-danger")">
-                    <td>@item.EventName</td>
-                    <td>@item.EventDate.Date.ToLongDateString()</td>
-                </tr>
+                @foreach (var item in Model.EventVisits)
+                {
+                    @switch (item.State)
+                    {
+                        case EventVisitState.Visited:
+                            <tr class="table-success">
+                                <td>@item.EventName</td>
+                                <td>@item.Date.Date.ToLongDateString()</td>
+                            </tr>
+                            break;
+                        case EventVisitState.NotVisited:
+                            <tr class="table-danger">
+                                <td>@item.EventName</td>
+                                <td>@item.Date.Date.ToLongDateString()</td>
+                            </tr>
+                            break;
+                        case EventVisitState.NotHappendYet:
+                            <tr class="table-secondary">
+                                <td>@item.EventName</td>
+                                <td>@item.Date.Date.ToLongDateString()</td>
+                            </tr>
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                @foreach (var item in Model.EventVisits.Where(i => i.State == EventVisitState.Visited))
+                {
+                    <tr class="table-success">
+                        <td>@item.EventName</td>
+                        <td>@item.Date.Date.ToLongDateString()</td>
+                    </tr>
+                }
             }
         }
         else
