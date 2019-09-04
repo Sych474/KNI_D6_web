@@ -25,7 +25,7 @@ namespace KNI_D6_web.Model
         public const string User = "User";
         public static List<string> Roles => new List<string>() { Admin, User, Moderator };
         public const string AdminAndModerator = "Admin, Moderator";
-
+        public const string AllRoles = "Admin, Moderator, User";
         public static UserRolesEnum GetMaximumRole(IEnumerable<string> roles)
         {
             var result = UserRolesEnum.User;

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using KNI_D6_web.ViewModels.AchievementsProgress;
+using System.Collections.Generic;
 
 namespace KNI_D6_web.ViewModels.Users
 {
     public class ManageAchievementsViewModel
     {
-        public IEnumerable<AchievementViewModel> Achievements { get; set; }
+        public IEnumerable<AchievementProgressViewModel> Achievements { get; set; }
 
         public string Login { get; set; }
 
