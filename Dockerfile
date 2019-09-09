@@ -12,5 +12,5 @@ COPY . ./
 RUN dotnet publish ./KNI_D6_web/KNI_D6_web.csproj -c Release -o out
 
 # Build runtime image
-WORKDIR /KNI_D6_web
+WORKDIR /KNI_D6_web/out
 ENTRYPOINT ["dotnet", "KNI_D6_web.dll"]
