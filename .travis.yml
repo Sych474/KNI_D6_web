@@ -5,11 +5,9 @@ dotnet: 2.2
 
 jobs:
   include:
-    - stage: unit tests 
-      before_script:
-      - dotnet restore ./
+    - stage: test build 
       script:  
-      - dotnet test ./ -c Release
+      - dotnet build ./ -c Release
     - stage: build docker image
       script:
       - docker login -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD 
