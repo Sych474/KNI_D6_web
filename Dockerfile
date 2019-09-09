@@ -11,4 +11,4 @@ COPY . ./
 RUN dotnet publish ./KNI_D6_web/KNI_D6_web.csproj -c Release -o out
 
 WORKDIR /app/KNI_D6_web/out
-ENTRYPOINT ["dotnet", "KNI_D6_web.dll"]
+CMD ["dotnet", "KNI_D6_web.dll"]
