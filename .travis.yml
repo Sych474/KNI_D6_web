@@ -2,12 +2,12 @@ sudo: true
 
 jobs:
   include:
-    - stage: test build 
-      language: csharp
-      mono: none
-      dotnet: 2.2
-      script:  
-      - dotnet build ./ -c Release
+    #- stage: test build 
+    #  language: csharp
+    #  mono: none
+    #  dotnet: 2.2
+    #  script:  
+    #  - dotnet build ./ -c Release
     - stage: build and deploy
       dist: trusty
       script:
