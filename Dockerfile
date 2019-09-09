@@ -10,5 +10,7 @@ COPY . ./
 
 RUN dotnet publish ./KNI_D6_web/KNI_D6_web.csproj -c Release -o out
 
-WORKDIR /app/KNI_D6_web/out
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
+WORKDIR /app
+COPY --from=build-env /app/KNI_D6_web/out .
 CMD ["dotnet", "KNI_D6_web.dll"]

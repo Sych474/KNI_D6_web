@@ -1,3 +1,4 @@
+cd ./kni_d6
 if docker-compose up -d; then
   echo -e "\n[INFO] Stack was successfully deployed."
 else
