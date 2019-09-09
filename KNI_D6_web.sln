@@ -5,7 +5,14 @@ VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KNI_D6_web", "KNI_D6_web\KNI_D6_web.csproj", "{A2DE1C40-BDAD-4413-944A-644095F963D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KNI_D6_web.Model", "KNI_D6_web.Model\KNI_D6_web.Model.csproj", "{71C047D0-DFEB-4A96-A800-68A27C8CC84E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KNI_D6_web.Model", "KNI_D6_web.Model\KNI_D6_web.Model.csproj", "{71C047D0-DFEB-4A96-A800-68A27C8CC84E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B96D172B-E4E5-401A-9E60-4366932A5863}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
