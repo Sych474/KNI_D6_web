@@ -9,10 +9,8 @@ RUN dotnet restore
 
 COPY . ./
 
-RUN dotnet publish ./KNI_D6_web/KNI_D6_web.csproj -c Release -o /app
+RUN dotnet publish ./KNI_D6_web/KNI_D6_web.csproj -c Release -o out
 
 # Build runtime image
-FROM microsoft/dotnet:2.2-aspnetcore-runtime
-WORKDIR /app
-COPY --from=build-env /app/out .
+WORKDIR /KNI_D6_web
 ENTRYPOINT ["dotnet", "KNI_D6_web.dll"]
