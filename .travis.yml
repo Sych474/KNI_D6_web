@@ -1,0 +1,23 @@
+sudo: true
+language: csharp
+mono: none
+dotnet: 2.2
+
+jobs:
+  include:
+    - stage: unit tests 
+      before_script:
+      - dotnet restore ./
+      script:  
+      - dotnet test ./ -c Release
+    - stage: build docker image
+      script:
+      - docker login -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD 
+      - docker build -t sych474/$SERVICE_NAME:latest ./KNI_D6_web
+      - docker push sych474/$SERVICE_NAME:latest
+
+    - stage: deploy to prod
+      script: 
+      - sudo apt-get install sshpass
+      - sshpass -p $DEPLOY_HOST_USER_PASSWORD scp -o StrictHostKeyChecking=no docker-compose.yml $DEPLOY_HOST_USER@$DEPLOY_HOST_ADDRESS:~;
+      - sshpass -p "$DEPLOY_HOST_USER_PASSWORD" ssh -o StrictHostKeyChecking=no $DEPLOY_HOST_USER@$DEPLOY_HOST_ADDRESS bash -s < scripts/deploy_to_prod.sh
