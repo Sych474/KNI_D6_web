@@ -9,12 +9,14 @@ jobs:
       script:  
       - dotnet build ./ -c Release
     - stage: build docker image
+      dist: trusty
       script:
       - docker login -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD 
       - docker build -t sych474/$SERVICE_NAME:latest ./
       - docker push sych474/$SERVICE_NAME:latest
 
     - stage: deploy to prod
+      dist: trusty
       script: 
       - sudo apt-get install sshpass
       - sshpass -p $DEPLOY_HOST_USER_PASSWORD scp -o StrictHostKeyChecking=no docker-compose.yml $DEPLOY_HOST_USER@$DEPLOY_HOST_ADDRESS:~;
