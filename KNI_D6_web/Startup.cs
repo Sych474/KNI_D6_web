@@ -43,8 +43,6 @@ namespace KNI_D6_web
             });
 
             services.Configure<EmailConfiguration>(options => Configuration.GetSection("EmailConfiguration").Bind(options));
-            var r = Configuration.GetSection("EmailConfiguration");
-            var rr = Configuration.GetSection("dbInitializationConfiguration");
             Configuration.GetSection("dbInitializationConfiguration").Bind(DbInitializationConfiguration);
             Configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
             services.Configure<DbInitializationConfiguration>(options => Configuration.GetSection("dbInitializationConfiguration").Bind(options));
