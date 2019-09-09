@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+    characters_hub:
+      image: sych474/kni_d6_web:latest
+      ports:
+        - "80:80"
+      depends_on:
+        - database
+      networks:
+        - net
+        
+    database: 
+      image: postgres
+      ports:
+        - "5432:5432"
+      volumes: 
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - net
+
+networks:
+  net:
+volumes:
+  postgres_data:
