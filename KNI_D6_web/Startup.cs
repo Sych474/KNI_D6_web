@@ -81,6 +81,8 @@ namespace KNI_D6_web
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            ApplyMigrations(app);
+
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
@@ -93,6 +95,18 @@ namespace KNI_D6_web
             });
         }
 
+        private static void ApplyMigrations(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
+        }
         private async Task InitializeDatabase(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
