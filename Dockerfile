@@ -8,7 +8,7 @@ RUN dotnet restore
 
 COPY . ./
 WORKDIR /app/KNI_D6_web
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Debug -o out
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime
 WORKDIR /app
