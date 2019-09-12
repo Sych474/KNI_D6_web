@@ -29,7 +29,7 @@
                     <a class="btn btn-success ml-1" asp-controller="Users" asp-action="UserDetails" asp-route-id="@user.Id"> Подробнее </a>
                     @if (User.IsInRole(UserRoles.Admin))
                     {
-                        <a class="btn btn-danger ml-1" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id"> Удалить </a>
+                        <a class="btn btn-danger ml-1" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id"> Удалить </a>
                     }
                 </td>
             </tr>
