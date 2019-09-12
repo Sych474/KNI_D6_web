@@ -11,7 +11,7 @@ jobs:
     - stage: build docker
       dist: trusty
       script: 
-        sudo . ./scripts/build_docker.sh
+      - sudo . ./scripts/build_docker.sh
 
     - stage: deploy
       dist: trusty
