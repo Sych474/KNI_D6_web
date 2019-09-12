@@ -10,7 +10,8 @@ jobs:
     #  - dotnet build ./ -c Release
     - stage: build docker
       dist: trusty
-      script: ./scripts/build_docker.sh
+      script: 
+        sudo . ./scripts/build_docker.sh
 
     - stage: deploy
       dist: trusty
