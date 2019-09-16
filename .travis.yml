@@ -2,18 +2,20 @@ sudo: true
 
 jobs:
   include:
-    #- stage: test build 
-    #  language: csharp
-    #  mono: none
-    #  dotnet: 2.2
-    #  script:  
-    #  - dotnet build ./ -c Release
+    - stage: test build 
+      language: csharp
+      mono: none
+      dotnet: 2.2
+      script:  
+      - dotnet build ./ -c Release
     - stage: build docker
+      if: (branch = master)
       dist: trusty
       script: 
       - sudo bash ./scripts/build_docker.sh
 
     - stage: deploy
+      if: (branch = master)
       dist: trusty
       script:
       - sudo apt-get install sshpass
