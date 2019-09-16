@@ -152,18 +152,17 @@ namespace KNI_D6_web.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditCustom(int id)
         {
             IActionResult result = NotFound();
-            if (id != null)
+            if (ModelState.IsValid)
             {
-                var achievement = await dbContext.Achievements.FindAsync(id);
+                var achievement = await dbContext.Achievements.FirstOrDefaultAsync(a => a.Id == id);
                 if (achievement != null)
                 {
                     var achievementParameter = await dbContext.AchievementParameters.FirstOrDefaultAsync(ap => ap.AchievementId == id);
                     var viewModel = new EditAchievementViewModel(achievement, achievementParameter?.ParameterId);
                     ViewData["AchievementsGroupId"] = CreateAchievementGroupsList(achievement.AchievementsGroupId);
-                    ViewData["Parameters"] = CreateParametersList(achievementParameter?.ParameterId);
                     result =  View(viewModel);
                 }        
             }
@@ -171,9 +170,28 @@ namespace KNI_D6_web.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> EditCalculated(int id)
+        {
+            IActionResult result = NotFound();
+            if (ModelState.IsValid)
+            {
+                var achievement = await dbContext.Achievements.FirstOrDefaultAsync(a => a.Id == id);
+                if (achievement != null)
+                {
+                    var achievementParameter = await dbContext.AchievementParameters.FirstOrDefaultAsync(ap => ap.AchievementId == id);
+                    var viewModel = new EditAchievementViewModel(achievement, achievementParameter?.ParameterId);
+                    ViewData["AchievementsGroupId"] = CreateAchievementGroupsList(achievement.AchievementsGroupId);
+                    ViewData["Parameters"] = CreateParametersList(achievementParameter?.ParameterId);
+                    result = View(viewModel);
+                }
+            }
+            return result;
+        }
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,AchievementParameterId")] EditAchievementViewModel viewModel)
+        public async Task<IActionResult> EditCustom(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType")] EditAchievementViewModel viewModel)
         {
             IActionResult result = NotFound();
             if (ModelState.IsValid)
@@ -182,7 +200,48 @@ namespace KNI_D6_web.Controllers
                 {
                     try
                     {
-                        var achievement = await dbContext.Achievements.FindAsync(id);
+                        var achievement = await dbContext.Achievements.FirstOrDefaultAsync(a => a.Id == id);
+                        var oldAchievementParameter = await dbContext.AchievementParameters.FirstOrDefaultAsync(ap => ap.AchievementId == id);
+
+                        var newAchievementParameter = viewModel.GetAchievementParameter();
+                        viewModel.UpdateAchievement(achievement);
+
+                        dbContext.Update(achievement);
+
+                        if (oldAchievementParameter != null)
+                            dbContext.AchievementParameters.Remove(oldAchievementParameter);
+                        if (newAchievementParameter != null)
+                            dbContext.AchievementParameters.Add(newAchievementParameter);
+                        await dbContext.SaveChangesAsync();
+                        ViewData["AchievementsGroupId"] = CreateAchievementGroupsList(achievement.AchievementsGroupId);
+
+                        result = RedirectToAction(nameof(Index));
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (AchievementExists(id))
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCalculated(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,AchievementParameterId")] EditAchievementViewModel viewModel)
+        {
+            IActionResult result = NotFound();
+            if (ModelState.IsValid)
+            {
+                if (id == viewModel.Id)
+                {
+                    try
+                    {
+                        var achievement = await dbContext.Achievements.FirstOrDefaultAsync(a => a.Id == id);
                         var oldAchievementParameter = await dbContext.AchievementParameters.FirstOrDefaultAsync(ap => ap.AchievementId == id);
 
                         var newAchievementParameter = viewModel.GetAchievementParameter();
@@ -301,7 +360,8 @@ namespace KNI_D6_web.Controllers
                         AchievementValue = achievement.AchievementValue,
                         LinkedParameterName = linkedParameter?.Name,
                         LinkedParameterValue = linkedParameterValue?.Value,
-                        IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == achievement.Id)
+                        IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == achievement.Id),
+                        AchievementType = achievement.AchievementType
                     };
                     progressGroup.Add(progress);
                 }
