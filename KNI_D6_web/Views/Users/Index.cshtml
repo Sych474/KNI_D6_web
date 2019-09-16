@@ -1,0 +1,39 @@
+﻿@model KNI_D6_web.ViewModels.Users.UsersViewModel
+@using KNI_D6_web.Model;
+@{
+    ViewData["Title"] = "Наши игроки";
+}
+
+<h1>Наши игроки</h1>
+
+<div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Имя</th>
+                <th>Число посещений</th>
+                <th>Число достижений</th>
+                <th>Статус в клубе</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Users)
+            {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.UserEvents.Count()</td>
+                <td>@user.UserAchievements.Count()</td>
+                <th>@user.Position.GetDescription()</th>
+                <td>
+                    <a class="btn btn-success ml-1" asp-controller="Users" asp-action="UserDetails" asp-route-id="@user.Id"> Подробнее </a>
+                    @if (User.IsInRole(UserRoles.Admin))
+                    {
+                        <a class="btn btn-danger ml-1" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id"> Удалить </a>
+                    }
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

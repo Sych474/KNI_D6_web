@@ -1,0 +1,21 @@
+﻿@model KNI_D6_web.Model.Event
+
+@{
+    ViewData["Title"] = "Подробности о мероприятии";
+}
+
+<h1>@Model.Name</h1>
+<h4>@Model.Date.ToShortDateString()</h4>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dd class="col-sm-10">
+            <h5>@Model.Description</h5>
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary" asp-action="Index">К списку мероприятий</a>
+</div>

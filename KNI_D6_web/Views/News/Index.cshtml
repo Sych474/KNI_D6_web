@@ -1,0 +1,31 @@
+﻿@model KNI_D6_web.ViewModels.News.NewsViewModel
+@using KNI_D6_web.Model;
+@{
+    ViewData["Title"] = "Новости";
+}
+
+<h1>Новости КНИ</h1>
+@if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+{
+    <div class="text-center">
+        <a class="btn btn-outline-primary m-2" asp-controller="News" asp-action="Create">Добавить новостной пост</a>
+    </div>
+}
+
+@foreach (var item in Model.NewsPosts)
+{
+    <div class="card text-center m-2">
+        <div class="card-body">
+            <h5 class="card-title">@item.Article</h5>
+            <p class="card-text">@item.Text</p>
+            @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+            {
+                <a class="btn btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                <a class="btn btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+            }
+        </div>
+        <div class="card-footer text-muted">
+            @item.PublicationDate.ToString("dd/MM/yyyy") автор: @item.Author.UserName
+        </div>
+    </div>
+}

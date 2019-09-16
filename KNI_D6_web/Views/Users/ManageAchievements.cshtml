@@ -1,0 +1,35 @@
+﻿@model  KNI_D6_web.ViewModels.Users.ManageAchievementsViewModel
+@{
+    ViewData["Title"] = "ManageAchievements";
+}
+
+<h1>Управления достижениями @Model.Login</h1>
+
+<div>
+    <table class="table table-hover">
+        <tbody>
+            @foreach (var item in Model.Achievements)
+            {
+            <tr>
+                <td>@item.AchievementName</td>
+                @if (item.IsReceived)
+                {
+                    <td>
+                        <a class="btn btn-danger" asp-action="RemoveAchievement" asp-route-achievementId="@item.AchievementId" asp-route-userId="@Model.UserId">Удалить</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a class="btn btn-success" asp-action="AddAchievement" asp-route-achievementId="@item.AchievementId" asp-route-userId="@Model.UserId">Добавить</a>
+                    </td>
+                }
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a class="btn btn-outline-primary ml-1" asp-controller="Users" asp-action="UserDetails" asp-route-id="@Model.UserId"> Назад </a>
+</div>

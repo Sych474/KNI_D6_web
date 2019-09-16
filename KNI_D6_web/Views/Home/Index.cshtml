@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "КНИ \"Шестигранник\"";
+}
+
+<div class="text-center">
+    <h3 class="display-4">
+        Добро пожаловать @(User.Identity.IsAuthenticated ? $"{@User.Identity.Name}!" : "незнакомец!")
+    </h3>
+</div>
+<div>
+    <div class="text_default">
+        <p class="text-center text_highlighted">
+            Ты находишься на сайте Клуба Настольных Игр <b>"Шестигранник"</b>
+        </p>
+        <p>
+            КНИ "Шестигранник" - это клуб при МГТУ им. Н.Э. Баумана. Мы играем в разные игры, легкие и веселые, военные и мирные, тактические и стратегические и даже в НРИ!
+        </p>
+        <p>
+            На сайте можно посмотреть <a asp-controller="Events" asp-action="Index">календарь</a> наших мероприятий,
+            <a asp-controller="Users" asp-action="Index">список</a> наших игроков их достижения,
+            а также полный <a asp-controller="Achievements" asp-action="Index"> список достижений </a>, которые можно получить в нашем клубе.
+        </p>
+        <p class="text-center text_highlighted">
+            <b>Приходи к нам играть!</b>
+            <br>
+        </p>
+    </div>
+    <div class="text-center">
+        <img src="~/img/logo/cubes.png" width="400" height="400" class="d-inline-block align-top" alt="">
+    </div>
+    <div class="text_default">
+        <p>
+            А еще у нас есть группа <a href="https://vk.com/kni6d">в контакте</a>, там можно найти фотографии, актуальные новости и связаться с админами.
+        </p>
+    </div>
+</div>
