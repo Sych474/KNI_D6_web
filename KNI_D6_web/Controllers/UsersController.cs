@@ -242,6 +242,7 @@ namespace KNI_D6_web.Controllers
             {
                 AchievementId = a.Id,
                 AchievementName = a.Name,
+                AchievementType = a.AchievementType,
                 IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == a.Id)
             });
         }

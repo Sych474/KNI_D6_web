@@ -32,11 +32,18 @@
                                 <br />
                                 @if (User.IsInRole(UserRoles.Admin))
                                 {
-                                    <div class="mt-1">
-                                        <a class="btn btn-sm btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
-                                        <a class="btn btn-sm btn-primary ml-1" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
-                                        <a class="btn btn-sm btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
-                                    </div>
+                            <div class="mt-1">
+                                @if (item.AchievementType == KNI_D6_web.Model.Achievements.AchievementType.Calculated)
+                                {
+                                    <a class="btn btn-sm btn-warning ml-1" asp-controller="Achievements" asp-action="EditCalculated" asp-route-id="@item.Id"> Изменить </a>
+                                }
+                                @if (item.AchievementType == KNI_D6_web.Model.Achievements.AchievementType.Custom)
+                                {
+                                    <a class="btn btn-sm btn-warning ml-1" asp-controller="Achievements" asp-action="EditCustom" asp-route-id="@item.Id"> Изменить </a>
+                                }
+                                <a class="btn btn-sm btn-primary ml-1" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                                <a class="btn btn-sm btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                            </div>
                                 }
                             </div>
                         </li>
