@@ -110,19 +110,19 @@
                         case EventVisitState.Visited:
                             <tr class="table-success">
                                 <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToLongDateString()</td>
+                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
                             </tr>
                             break;
                         case EventVisitState.NotVisited:
                             <tr class="table-danger">
                                 <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToLongDateString()</td>
+                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
                             </tr>
                             break;
                         case EventVisitState.NotHappendYet:
                             <tr class="table-secondary">
                                 <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToLongDateString()</td>
+                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
                             </tr>
                             break;
                         default:
@@ -136,7 +136,7 @@
                 {
                     <tr class="table-success">
                         <td>@item.EventName</td>
-                        <td>@item.Date.Date.ToLongDateString()</td>
+                        <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
                     </tr>
                 }
             }

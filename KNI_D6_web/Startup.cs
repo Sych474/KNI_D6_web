@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Database.Initialization;
 using KNI_D6_web.Model.Database.Initialization.Configuration;
-using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,19 +28,15 @@ namespace KNI_D6_web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
             services.Configure<EmailConfiguration>(options => Configuration.GetSection("EmailConfiguration").Bind(options));
-            var r = Configuration.GetSection("EmailConfiguration");
-            var rr = Configuration.GetSection("dbInitializationConfiguration");
             Configuration.GetSection("dbInitializationConfiguration").Bind(DbInitializationConfiguration);
             Configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
             services.Configure<DbInitializationConfiguration>(options => Configuration.GetSection("dbInitializationConfiguration").Bind(options));
@@ -53,11 +45,11 @@ namespace KNI_D6_web
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<User, IdentityRole>(opts => {
-                opts.Password.RequiredLength = 5;   // минимальная длина
-                opts.Password.RequireNonAlphanumeric = false;   // требуются ли не алфавитно-цифровые символы
-                opts.Password.RequireLowercase = false; // требуются ли символы в нижнем регистре
-                opts.Password.RequireUppercase = false; // требуются ли символы в верхнем регистре
-                opts.Password.RequireDigit = false; // требуются ли цифры
+                opts.Password.RequiredLength = 5;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireDigit = false;
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -67,11 +59,8 @@ namespace KNI_D6_web
             services.AddTransient<IEmailService, EmailService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            InitializeDatabase(services).Wait();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -82,6 +71,9 @@ namespace KNI_D6_web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            ApplyMigrations(app);
+            InitializeDatabase(app).Wait();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -95,13 +87,32 @@ namespace KNI_D6_web
             });
         }
 
-        private async Task InitializeDatabase(IServiceCollection services)
+        private static void ApplyMigrations(IApplicationBuilder app)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var dbContext = serviceProvider.GetService<ApplicationDbContext>();
-            var userManager = serviceProvider.GetService<UserManager<User>>();
-            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
-            await DatabaseInitializer.InitializeDatabase(dbContext, userManager, roleManager, DbInitializationConfiguration);
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
+        }
+
+        private async Task InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                using (var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>())
+                using (var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>())
+                {
+                    await DatabaseInitializer.InitializeDatabase(context, userManager, roleManager, DbInitializationConfiguration);
+                }
+            }
         }
     }
 }

@@ -25,7 +25,7 @@
             }
         </div>
         <div class="card-footer text-muted">
-            @item.PublicationDate.ToLongDateString() автор: @item.Author.UserName
+            @item.PublicationDate.ToString("dd/MM/yyyy") автор: @item.Author.UserName
         </div>
     </div>
 }

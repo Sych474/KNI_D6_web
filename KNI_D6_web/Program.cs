@@ -27,6 +27,7 @@ namespace KNI_D6_web
                     config.AddCommandLine(args);
                     config.Build();
                 })
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseUrls("http://0.0.0.0:80");
     }
 }
