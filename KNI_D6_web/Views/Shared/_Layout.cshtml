@@ -19,6 +19,7 @@
     </environment>
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="shortcut icon" href="~/img/logo/cubes.ico" />
 </head>
 <body>
     <header>
@@ -59,15 +60,15 @@
                 <ul class="navbar-nav ml-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item">
-                            <a class="btn btn-success  ml-1" asp-controller="Users" asp-action="UserDetailsByLogin" asp-route-login="@User.Identity.Name">@User.Identity.Name</a>
+                        <li class="nav-item ">
+                            <a class="btn btn-success m-1" asp-controller="Users" asp-action="UserDetailsByLogin" asp-route-login="@User.Identity.Name">@User.Identity.Name</a>
                         </li>
                     }
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
                             <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
-                                <button class="btn btn-outline-danger ml-1" type="submit">Logout</button>
+                                <button class="btn btn-outline-danger m-1" type="submit">Logout</button>
                             </form>
                         </li>
                     }
@@ -75,12 +76,12 @@
                     {
                         <li class="nav-item">
                             <form method="get" asp-area="" asp-controller="Account" asp-action="Login">
-                                <button class="btn btn-outline-success ml-1" type="submit">Login</button>
+                                <button class="btn btn-outline-success m-1" type="submit">Login</button>
                             </form>
                         </li>
                         <li class="nav-item">
                             <form method="get" asp-area="" asp-controller="Account" asp-action="Register">
-                                <button class="btn btn-outline-primary ml-1" type="submit">Register</button>
+                                <button class="btn btn-outline-primary m-1" type="submit">Register</button>
                             </form>
                         </li>
                     }
