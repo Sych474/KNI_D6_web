@@ -34,13 +34,10 @@
                                 {
                                     int percent = item.IsReceived ? 100 : (int)Math.Round(((double)item.LinkedParameterValue / (double)item.AchievementValue) * 100);
                                     string progressLabel = item.IsReceived ? $"{item.AchievementValue} / {item.AchievementValue}" : $"{item.LinkedParameterValue} / {item.AchievementValue}";
-                                    <div>
-                                        Параметр: @item.LinkedParameterName
-                                    </div>
 
                                     <div class="progress mt-1 mb-1">
                                         <div class="progress-bar bg-success" style="width: @percent%" role="progressbar" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">@(percent != 0 ? progressLabel : "")</div>
-                                        <div class="progress-bar bg-warning" style="width: @(100 - percent)%" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">@(percent == 0 ? progressLabel : "")</div>
+                                        <div class="progress-bar bg-secondary" style="width: @(100 - percent)%" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">@(percent == 0 ? progressLabel : "")</div>
                                     </div>
                                 }
                                 @if (User.IsInRole(UserRoles.Admin))
