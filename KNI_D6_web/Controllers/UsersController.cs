@@ -210,7 +210,9 @@ namespace KNI_D6_web.Controllers
         {
             var newRoles = UserRoles.GetAllRolesByMaximumRole(viewModel.UserRole);
 
-            await userManager.RemoveFromRolesAsync(user, UserRoles.Roles);
+            var currRoles = await userManager.GetRolesAsync(user);
+
+            await userManager.RemoveFromRolesAsync(user, currRoles);
             await userManager.AddToRolesAsync(user, newRoles);
 
             user.Position = viewModel.UserPosition;
