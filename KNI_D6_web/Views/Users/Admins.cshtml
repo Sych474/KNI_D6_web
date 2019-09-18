@@ -15,7 +15,12 @@
         <div class="container">
             @for (int rowNumber = 0; rowNumber < cardRows; rowNumber++)
             {
-                var cardsInRow = (rowNumber < cardRows - 1) ? maxCardsInRow : Model.Admins.Count() % maxCardsInRow;
+
+                int cardsInRow = maxCardsInRow;
+                if (rowNumber == cardRows - 1 && Model.Admins.Count() % maxCardsInRow != 0)
+                {
+                    cardsInRow = Model.Admins.Count() % maxCardsInRow;
+                }
                 <div class="row hidden-md-up">
                     @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
                         {
