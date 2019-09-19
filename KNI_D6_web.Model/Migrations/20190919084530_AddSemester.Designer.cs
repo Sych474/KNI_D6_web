@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190919074342_AddSemester")]
+    [Migration("20190919084530_AddSemester")]
     partial class AddSemester
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,6 +150,8 @@ namespace KNI_D6_web.Model.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsCurrent");
 
                     b.Property<string>("Name");
 

@@ -23,7 +23,8 @@ namespace KNI_D6_web.Model.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    IsCurrent = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
