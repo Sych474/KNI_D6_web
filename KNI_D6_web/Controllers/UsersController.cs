@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
-using KNI_D6_web.ViewModels.AchievementsProgress;
+using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using KNI_D6_web.ViewModels.Users;
 using KNI_D6_web.ViewModels.Visits;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,5 @@
 ﻿using KNI_D6_web.Model;
-using KNI_D6_web.ViewModels.AchievementsProgress;
+using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using KNI_D6_web.ViewModels.Visits;
 using System.Collections.Generic;
 

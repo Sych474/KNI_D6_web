@@ -65,37 +65,40 @@
 
 <div>
     <h2>Достижения </h2>
-    <a class="btn btn-outline-primary" asp-controller="Achievements" asp-action="Progress" asp-route-login="@Model.User.UserName">Прогресс достижений</a>
-    @if (Model.User.UserAchievements.Any())
-    {
-        <div class="container rounded rounded-lg m-2 ">
-            <ul class="list-unstyled">
-                @foreach (var item in Model.User.UserAchievements)
-                {
-                    <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
-                        <!--<img src="..." class="mr-3" alt="...">-->
-                        <div class="media-body">
-                            <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
-                            @item.Achievement.Description
-                            <br />
-                        </div>
-                    </li>
+    <div class="pt-2">
+        @if (Model.User.UserAchievements.Any())
+        {
+            <div class="container rounded rounded-lg mt-2 ">
+                <ul class="list-unstyled">
+                    @foreach (var item in Model.User.UserAchievements)
+                    {
+                        <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
+                            <!--<img src="..." class="mr-3" alt="...">-->
+                            <div class="media-body">
+                                <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
+                                @item.Achievement.Description
+                                <br />
+                            </div>
+                        </li>
 
-                }
-            </ul>
-        </div>
-    }
-    else
-    {
-        <h5>Достижений пока нет, но скоро будут!</h5>
-    }
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <h5>Достижений пока нет, но скоро будут!</h5>
+        }
+    </div>
+    <div class="p-2 text-center">
+        <a class="btn btn-outline-primary m-1" asp-controller="Achievements" asp-action="Progress" asp-route-userLogin="@Model.User.UserName">Прогресс достижений</a>
 
-    @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
-    {
-        <a class="btn btn-primary" asp-action="ManageAchievements" asp-route-userId="@Model.User.Id">Изменить достижения</a>
-    }
+        @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
+        {
+            <a class="btn btn-primary m-1" asp-action="ManageAchievements" asp-route-userId="@Model.User.Id">Изменить достижения</a>
+        }
+    </div>
 </div>
-
 <div class="mt-2">
     <h2>Посещаемость</h2>
     <table class="table table-hover">
@@ -143,8 +146,10 @@
         }
         else
         {
-            <tr class="table-danger">
-                <td>Список мероприятий пуст!</td>
+            <tr class="">
+                <td>
+                    <h5>Посещений пока нет, но скоро будут!</h5>
+                </td>
             </tr>
         }
     </table>
