@@ -4,6 +4,8 @@ using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Database.Initialization;
 using KNI_D6_web.Model.Database.Initialization.Configuration;
+using KNI_D6_web.Model.Database.Repositories;
+using KNI_D6_web.Model.Database.Repositories.Implementation;
 using KNI_D6_web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -57,6 +59,8 @@ namespace KNI_D6_web
             services.AddTransient<IAchievementsCalculator, AchievementsCalculator>();
             services.AddTransient<IAchievementsManager, AchievementsManager>();
             services.AddTransient<IEmailService, EmailService>();
+
+            services.AddTransient<ISemestersRepository, SemestersRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
