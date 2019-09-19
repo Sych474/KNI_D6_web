@@ -1,0 +1,30 @@
+﻿@model IEnumerable<KNI_D6_web.Model.Semester>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Семестры</h1>
+
+<div class="text-center">
+    <a class="btn btn-outline-primary m-2" asp-action="Create">Добавить новый семестр</a>
+</div>
+
+
+<table class="table">
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.IsCurrent ? "table-success" : "table-secondary")">
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    <a class="btn btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                    <a class="btn btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                    <a class="btn btn-danger ml-1" asp-action="SetAsCurrent" asp-route-id="@item.Id"> Сделать активным </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
