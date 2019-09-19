@@ -9,6 +9,8 @@ namespace KNI_D6_web.Model
 
         public string Name { get; set; }
 
+        public bool IsCurrent { get; set; }
+
         public IEnumerable<Achievement> Achievements { get; set; } = new List<Achievement>();
 
         public IEnumerable<Event> Events { get; set; } = new List<Event>();
