@@ -61,6 +61,23 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
             return result;
         }
 
+        public async Task<bool> SetSemesterAsCurrentByIdAsync(int id)
+        {
+            if (!await context.Semesters.AnyAsync(s => s.Id == id))
+                return false;
+
+            foreach (var item in context.Semesters)
+            {
+                if (item.Id == id)
+                    item.IsCurrent = true;
+                else
+                    item.IsCurrent = false;
+                context.Semesters.Update(item);
+            }
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> UpdateSemesterAsync(Semester entity)
         {
             bool result = true;

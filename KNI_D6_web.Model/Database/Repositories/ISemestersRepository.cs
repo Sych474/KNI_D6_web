@@ -16,5 +16,7 @@ namespace KNI_D6_web.Model.Database.Repositories
         Task<bool> UpdateSemesterAsync(Semester entity);
 
         Task<bool> RemoveSemesterByIdAsync(int id);
+
+        Task<bool> SetSemesterAsCurrentByIdAsync(int id);
     }
 }
