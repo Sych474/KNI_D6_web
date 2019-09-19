@@ -2,10 +2,6 @@
 using KNI_D6_web.Model.Parameters;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KNI_D6_web.Model.Database
 {
@@ -33,27 +29,34 @@ namespace KNI_D6_web.Model.Database
 
         public DbSet<AchievementsGroup> AchievementGroups { get; set; }
 
+        public DbSet<Semester> Semesters { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            //Achievements
-            modelBuilder.Entity<Achievement>()
-                .HasOne(n => n.AchievementGroup)
-                .WithMany(u => u.Ahievements)
-                .HasForeignKey(n => n.AchievementsGroupId)
-                .HasPrincipalKey(u => u.Id)
-                .IsRequired();
+            modelBuilder.Entity<Achievement>(entity => 
+            {
+                entity.HasKey(a => a.Id);
 
-            //AchievementGroups
+                entity.HasOne(n => n.AchievementGroup)
+                    .WithMany(u => u.Ahievements)
+                    .HasForeignKey(n => n.AchievementsGroupId)
+                    .HasPrincipalKey(u => u.Id)
+                    .IsRequired();
+
+                entity.HasOne(a => a.Semester)
+                    .WithMany(s => s.Achievements)
+                    .HasForeignKey(n => n.SemesterId);
+            });
+
             modelBuilder.Entity<AchievementsGroup>()
                 .HasKey(ag => ag.Id);
 
-            //Parameters 
             modelBuilder.Entity<Parameter>()
                 .Property(p => p.Name).IsRequired();
 
-            //ParameterValues
             modelBuilder.Entity<ParameterValue>()
             .HasKey(pv => new { pv.ParameterId, pv.UserId });
 
@@ -71,33 +74,38 @@ namespace KNI_D6_web.Model.Database
                 .HasPrincipalKey(u => u.Id)
                 .IsRequired();
 
-            //Achievements
-            modelBuilder.Entity<Parameter>()
-                .Property(p => p.Name).IsRequired();
+            modelBuilder.Entity<Parameter>(entity => 
+            {
+                entity.Property(p => p.Name).IsRequired();
+            });
 
-            //AchievementParameters
-            modelBuilder.Entity<AchievementParameter>()
-            .HasKey(ap => new { ap.ParameterId, ap.AchievementId});
+            modelBuilder.Entity<AchievementParameter>(entity =>
+            {
+                entity.HasKey(ap => new { ap.ParameterId, ap.AchievementId});
 
-            modelBuilder.Entity<AchievementParameter>()
-                .HasOne(ap => ap.Parameter)
-                .WithMany(p => p.AchievementParameters)
-                .HasForeignKey(ap => ap.ParameterId)
-                .HasPrincipalKey(p => p.Id)
-                .IsRequired();
+                entity.HasOne(ap => ap.Parameter)
+                    .WithMany(p => p.AchievementParameters)
+                    .HasForeignKey(ap => ap.ParameterId)
+                    .HasPrincipalKey(p => p.Id)
+                    .IsRequired();
 
-            modelBuilder.Entity<AchievementParameter>()
-                .HasOne(ap => ap.Achievement)
-                .WithMany(a => a.AchievementParameters)
-                .HasForeignKey(ap => ap.AchievementId)
-                .HasPrincipalKey(a => a.Id)
-                .IsRequired();
+                entity.HasOne(ap => ap.Achievement)
+                    .WithMany(a => a.AchievementParameters)
+                    .HasForeignKey(ap => ap.AchievementId)
+                    .HasPrincipalKey(a => a.Id)
+                    .IsRequired();
+            });
 
-            //Events
-            modelBuilder.Entity<Event>()
-                .Property(e => e.Name).IsRequired();
-            modelBuilder.Entity<Event>()
-                .Property(e => e.Date).IsRequired();
+            modelBuilder.Entity<Event>(entity => 
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired();
+                entity.Property(e => e.Date).IsRequired();
+
+                entity.HasOne(e => e.Semester)
+                    .WithMany(s => s.Events)
+                    .HasForeignKey(n => n.SemesterId);
+            });
 
             //UserEvents
             modelBuilder.Entity<UserEvent>()
@@ -149,6 +157,11 @@ namespace KNI_D6_web.Model.Database
                 .HasForeignKey(ua => ua.AchievementId)
                 .HasPrincipalKey(a => a.Id)
                 .IsRequired();
+
+            modelBuilder.Entity<Semester>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+            });
         }
     }
 }
