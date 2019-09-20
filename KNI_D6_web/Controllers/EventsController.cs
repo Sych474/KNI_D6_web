@@ -9,6 +9,7 @@ using KNI_D6_web.ViewModels.Events;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using KNI_D6_web.Model.Database.Repositories;
 using System.Collections.Generic;
+using System;
 
 namespace KNI_D6_web.Controllers
 {
@@ -33,7 +34,17 @@ namespace KNI_D6_web.Controllers
                 await dbContext.Events.Where(e => e.SemesterId == semester.Id || e.SemesterId == null).OrderBy(x => x.Date).ToListAsync() :
                 await dbContext.Events.OrderBy(x => x.Date).ToListAsync();
 
-            return View(new EventsViewModel() { Events = events });
+            var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
+
+            var pastEvents = events.Except(futureEvents);
+
+            var viewModel = new EventsViewModel()
+            {
+                PastEvents = pastEvents,
+                FutureEvents = futureEvents
+            };
+
+            return View(viewModel);
         }
 
 
@@ -41,8 +52,16 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> All()
         {
             var events = await dbContext.Events.OrderByDescending(x => x.Date).ToListAsync();
+            var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
+            var pastEvents = events.Except(futureEvents);
 
-            return View("Index", new EventsViewModel() { Events = events });
+            var viewModel = new EventsViewModel()
+            {
+                PastEvents = pastEvents,
+                FutureEvents = futureEvents
+            };
+
+            return View("Index", viewModel);
         }
 
         [AllowAnonymous]
@@ -72,7 +91,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Date,SemesterId")] Event @event)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
             if (ModelState.IsValid)
             {
@@ -99,7 +118,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date,SemesterId")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
             if (id != @event.Id)
                 return NotFound();

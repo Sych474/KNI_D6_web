@@ -5,6 +5,8 @@ namespace KNI_D6_web.ViewModels.Events
 {
     public class EventsViewModel
     {
-        public IEnumerable<Event> Events { get; set; } 
+        public IEnumerable<Event> PastEvents { get; set; }
+
+        public IEnumerable<Event> FutureEvents { get; set; }
     }
 }

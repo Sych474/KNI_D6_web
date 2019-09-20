@@ -254,9 +254,9 @@ namespace KNI_D6_web.Controllers
             var result = EventVisitState.NotVisited;
 
             if (item.Date.Date >= DateTime.Now.Date)
-                return EventVisitState.NotHappendYet;
-            else if (visitedEventIds.Contains(item.Id))
-                return EventVisitState.Visited;
+                result = EventVisitState.NotHappendYet;
+            if (visitedEventIds.Contains(item.Id))
+                result = EventVisitState.Visited;
 
             return result;
         }
