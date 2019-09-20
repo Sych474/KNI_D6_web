@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using System.Threading.Tasks;
 
-namespace KNI_D6_web.Services
+namespace KNI_D6_web.Services.Email
 {
     public class EmailService : IEmailService
     {
