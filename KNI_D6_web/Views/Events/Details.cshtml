@@ -4,18 +4,22 @@
     ViewData["Title"] = "Подробности о мероприятии";
 }
 
-<h1>@Model.Name</h1>
-<h4>@Model.Date.ToShortDateString()</h4>
-
 <div>
-    <hr />
-    <dl class="row">
-        <dd class="col-sm-10">
-            <h5>@Model.Description</h5>
-        </dd>
-    </dl>
-</div>
+    <div class="jumbotron">
+        <h1 class="display-4">@Model.Name</h1>
+        <div>
+            <h4>
+                <span class="badge badge-pill badge-light">@Model.Date.ToString("dd/MM/yyyy")</span>
+                @if (Model.IsSpecial)
+                {
+                    <span class="badge badge-pill badge-light">Особое мероприятие</span>
+                }
+            </h4>
+        </div>
+        <p class="lead">@Model.Description</p>
 
-<div>
-    <a class="btn btn-outline-primary" asp-action="Index">К списку мероприятий</a>
+        <hr class="my-4">
+        
+        <a class="btn btn-outline-secondary" asp-action="Index">К списку мероприятий</a>
+    </div>
 </div>

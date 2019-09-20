@@ -16,42 +16,95 @@
 
 @{
     int maxCardsInRow = 3;
-    int cardRows = (int)Math.Ceiling(Model.Events.Count() / (double)maxCardsInRow);
+    int futureCardRows = (int)Math.Ceiling(Model.FutureEvents.Count() / (double)maxCardsInRow);
 }
-<div class="py-3">
+
+<div class="py-2">
+    <h3 class="text-center p-1">Предстоящие</h3>
     <div class="container">
-        @for (int rowNumber = 0; rowNumber < cardRows; rowNumber++)
+        @for (int rowNumber = 0; rowNumber < futureCardRows; rowNumber++)
         {
             int cardsInRow = maxCardsInRow;
-            if (rowNumber == cardRows - 1 && Model.Events.Count() % maxCardsInRow != 0)
+            if (rowNumber == futureCardRows - 1 && Model.FutureEvents.Count() % maxCardsInRow != 0)
             {
-                cardsInRow = Model.Events.Count() % maxCardsInRow;
+                cardsInRow = Model.FutureEvents.Count() % maxCardsInRow;
             }
-        <div class="row hidden-md-up">
-            @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
-            {
-                var item = Model.Events.ElementAt(rowNumber * maxCardsInRow + columnNumber);
-                <div class="col-md-4">
-                    <div class="card border-@(item.Date < DateTime.Now?"secondary":"success") alert-@(item.Date < DateTime.Now?"secondary":"success")">
-                        <div class="card-body">
-                            <h5 class="card-title text-dark">@item.Name</h5>
-                            <p>@item.Date.ToString("dd/MM/yyyy")</p>
-                            <p class="card-text">@item.Description</p>
-                            
-                            <a class="btn btn-outline-@(item.Date < DateTime.Now?"secondary":"success") ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
-                        </div>
-                        <div class="card-footer">
-                            @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
-                            {
-                                <a class="btn btn-outline-dark ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
-                                <a class="btn btn-outline-danger ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
-                                <a class="btn btn-outline-info ml-1 btn-sm" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
-                            }
+            <div class="row hidden-md-up">
+                @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
+                {
+                    var item = Model.FutureEvents.ElementAt(rowNumber * maxCardsInRow + columnNumber);
+                    <div class="col-md-4">
+                        <div class="card border-success alert-success">
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">@item.Name</h5>
+                                <h5>
+                                    <span class="badge badge-pill badge-light">@item.Date.ToString("dd/MM/yyyy")</span>
+                                    @if (item.IsSpecial)
+                                    {
+                                        <span class="badge badge-pill badge-light">Особое мероприятие</span>
+                                    }
+                                </h5>
+
+                                <p class="card-text">@item.Description</p>
+                                
+                                <a class="btn btn-outline-success ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                            </div>
+                            <div class="card-footer">
+                                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+                                {
+                                    <a class="btn btn-outline-dark ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                                    <a class="btn btn-outline-danger ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                                    <a class="btn btn-outline-info ml-1 btn-sm" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
         }
     </div>
+    <hr>
+</div>
+
+@{
+    int pastCardRows = (int)Math.Ceiling(Model.PastEvents.Count() / (double)maxCardsInRow);
+}
+<div class="py-2">
+    <h3 class="text-center p-1">Прошедшие</h3>
+    <div class="container">
+        @for (int rowNumber = 0; rowNumber < pastCardRows; rowNumber++)
+        {
+            int cardsInRow = maxCardsInRow;
+            if (rowNumber == pastCardRows - 1 && Model.PastEvents.Count() % maxCardsInRow != 0)
+            {
+                cardsInRow = Model.PastEvents.Count() % maxCardsInRow;
+            }
+            <div class="row hidden-md-up">
+                @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
+                {
+                    var item = Model.PastEvents.ElementAt(rowNumber * maxCardsInRow + columnNumber);
+                    <div class="col-md-4">
+                        <div class="card border-secondary alert-secondary">
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">@item.Name</h5>
+                                <h5><span class="badge badge-pill badge-light">@item.Date.ToString("dd/MM/yyyy")</span></h5>
+                                <p class="card-text">@item.Description</p>
+
+                                <a class="btn btn-outline-secondary ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                            </div>
+                            <div class="card-footer">
+                                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+                                {
+                                    <a class="btn btn-outline-dark ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                                    <a class="btn btn-outline-danger ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                                    <a class="btn btn-outline-info ml-1 btn-sm" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    <hr>
 </div>
