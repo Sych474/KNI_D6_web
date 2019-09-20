@@ -121,8 +121,6 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("AutoReset");
-
                     b.Property<string>("Name")
                         .IsRequired();
 

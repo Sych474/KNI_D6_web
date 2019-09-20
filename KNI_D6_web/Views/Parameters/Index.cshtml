@@ -26,9 +26,6 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AutoReset)
-            </td>
-            <td>
                 <a class="btn btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
                 <a class="btn btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
             </td>

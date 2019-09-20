@@ -7,6 +7,7 @@ using KNI_D6_web.Model.Parameters;
 using Microsoft.AspNetCore.Authorization;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
+using KNI_D6_web.Model.Database.Repositories;
 
 namespace KNI_D6_web.Controllers
 {
@@ -15,11 +16,13 @@ namespace KNI_D6_web.Controllers
     {
         private readonly ApplicationDbContext dbContext;
         private readonly IAchievementsManager achievementsManager;
-
-        public ParametersController(ApplicationDbContext dbContext, IAchievementsManager achievementsManager)
+        private readonly IParameterValuesRepository parameterValuesRepository;
+        
+        public ParametersController(ApplicationDbContext dbContext, IAchievementsManager achievementsManager, IParameterValuesRepository parameterValuesRepository)
         {
             this.dbContext = dbContext;
             this.achievementsManager = achievementsManager;
+            this.parameterValuesRepository = parameterValuesRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -34,20 +37,20 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,AutoReset")] Parameter parameter)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Parameter parameter)
         {
             IActionResult result = View(parameter);
             if (ModelState.IsValid)
             {
                 dbContext.Add(parameter);
-                
                 await dbContext.SaveChangesAsync();
-    
-                foreach (var user in dbContext.Users)
+
+                await parameterValuesRepository.AddParameterValues(dbContext.Users.Select(user => new ParameterValue()
                 {
-                        dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = user.Id});
-                }
-                await dbContext.SaveChangesAsync();
+                    ParameterId = parameter.Id,
+                    UserId = user.Id
+                }));
+
                 result = RedirectToAction(nameof(Index));
             }
             return result;
@@ -67,7 +70,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,AutoReset")] Parameter parameter)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Parameter parameter)
         {
             if (id != parameter.Id)
             {
@@ -130,13 +133,8 @@ namespace KNI_D6_web.Controllers
         {
             IActionResult result = NotFound(parameterId);
 
-            var parameterValue = await dbContext.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
-            if (parameterValue != null)
+            if (await parameterValuesRepository.IncrementParamenterValueForUser(parameterId, userId))
             {
-                parameterValue.Value++;
-                dbContext.ParameterValues.Update(parameterValue);
-
-                await dbContext.SaveChangesAsync();
                 await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }
@@ -148,13 +146,8 @@ namespace KNI_D6_web.Controllers
         {
             IActionResult result = NotFound(parameterId);
 
-            var parameterValue = await dbContext.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
-            if (parameterValue != null)
+            if (await parameterValuesRepository.DecrementParamenterValueForUser(parameterId, userId))
             {
-                parameterValue.Value--;
-                dbContext.ParameterValues.Update(parameterValue);
-
-                await dbContext.SaveChangesAsync();
                 await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace KNI_D6_web.Model.Parameters
+﻿namespace KNI_D6_web.Model.Parameters
 {
     public class ParameterValue
     {
+        public const int DefaultValue = 0;
+
         public int ParameterId { get; set; }
 
         public Parameter Parameter { get; set; }
@@ -15,6 +12,6 @@ namespace KNI_D6_web.Model.Parameters
 
         public User User { get; set; }
 
-        public int Value { get; set; }
+        public int Value { get; set; } = DefaultValue;
     }
 }

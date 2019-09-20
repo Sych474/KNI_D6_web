@@ -10,13 +10,14 @@ namespace KNI_D6_web.Controllers
     public class SemestersController : Controller
     {
         private readonly ISemestersRepository semestersRepository;
+        private readonly IParameterValuesRepository parameterValuesRepository;
 
-        public SemestersController(ISemestersRepository repository)
+        public SemestersController(ISemestersRepository semestersRepository, IParameterValuesRepository parameterValuesRepository)
         {
-            semestersRepository = repository;
+            this.semestersRepository = semestersRepository;
+            this.parameterValuesRepository = parameterValuesRepository;
         }
 
-        // GET: Semesters
         public async Task<IActionResult> Index()
         {
             return View(await semestersRepository.GetSemestersAsync());

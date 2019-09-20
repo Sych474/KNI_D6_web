@@ -6,7 +6,6 @@ using KNI_D6_web.Model.Database.Initialization;
 using KNI_D6_web.Model.Database.Initialization.Configuration;
 using KNI_D6_web.Model.Database.Repositories;
 using KNI_D6_web.Model.Database.Repositories.Implementation;
-using KNI_D6_web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +25,7 @@ namespace KNI_D6_web
         }
 
         private DbInitializationConfiguration DbInitializationConfiguration { get; set; } = new DbInitializationConfiguration();
-        private EmailConfiguration emailConfiguration { get; set; } = new EmailConfiguration();
-
+        
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -38,9 +36,7 @@ namespace KNI_D6_web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<EmailConfiguration>(options => Configuration.GetSection("EmailConfiguration").Bind(options));
             Configuration.GetSection("dbInitializationConfiguration").Bind(DbInitializationConfiguration);
-            Configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
             services.Configure<DbInitializationConfiguration>(options => Configuration.GetSection("dbInitializationConfiguration").Bind(options));
 
             services.AddDbContextPool<ApplicationDbContext>(options =>
@@ -58,9 +54,9 @@ namespace KNI_D6_web
 
             services.AddTransient<IAchievementsCalculator, AchievementsCalculator>();
             services.AddTransient<IAchievementsManager, AchievementsManager>();
-            services.AddTransient<IEmailService, EmailService>();
 
             services.AddTransient<ISemestersRepository, SemestersRepository>();
+            services.AddTransient<IParameterValuesRepository, ParameterValuesRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
