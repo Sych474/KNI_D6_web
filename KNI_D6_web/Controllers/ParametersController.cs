@@ -34,7 +34,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Parameter parameter)
+        public async Task<IActionResult> Create([Bind("Id,Name,AutoReset")] Parameter parameter)
         {
             IActionResult result = View(parameter);
             if (ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace KNI_D6_web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Parameter parameter)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,AutoReset")] Parameter parameter)
         {
             if (id != parameter.Id)
             {

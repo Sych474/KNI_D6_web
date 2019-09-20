@@ -13,24 +13,26 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                Название
-            </th>
+            <th>Название</th>
+            <th>Автосброс</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    <a class="btn btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
-                    <a class="btn btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AutoReset)
+            </td>
+            <td>
+                <a class="btn btn-warning ml-1" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                <a class="btn btn-danger ml-1" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
