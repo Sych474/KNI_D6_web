@@ -3,15 +3,17 @@ using System;
 using KNI_D6_web.Model.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KNI_D6_web.Model.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190919084530_AddSemester")]
+    partial class AddSemester
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,8 +82,6 @@ namespace KNI_D6_web.Model.Migrations
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Description");
-
-                    b.Property<bool>("IsSpecial");
 
                     b.Property<string>("Name")
                         .IsRequired();

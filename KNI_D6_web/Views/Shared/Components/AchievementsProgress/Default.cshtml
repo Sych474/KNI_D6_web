@@ -1,0 +1,48 @@
+﻿@model KNI_D6_web.ViewModels.Components.AchievementsProgress.AchievementsProgressViewModel
+@using KNI_D6_web.Model;
+
+<div>
+    <div class="py-4">
+        @foreach (var group in Model.AchievementsProgressInGroups)
+        {
+            var firstNotReceived = group.FirstOrDefault(i => !i.IsReceived);
+            var current = firstNotReceived != null ? firstNotReceived : group.Last();
+
+            <div class="container rounded rounded-lg m-1 p-1">
+                <ul class="list-unstyled">
+                    @foreach (var achievement in group.Where(a => a.IsReceived))
+                    {
+                        <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
+                            <div class="media-body">
+                                <h5 class="mt-0 mb-1">@achievement.AchievementName</h5>
+                                @achievement.AchievementDescription
+                                <br />
+                            </div>
+                        </li>
+                    }
+                    @if (!current.IsReceived)
+                    {
+                    <li class="media border alert-dark text-dark border-dark rounded rounded-lg p-2 m-1">
+                        <!--<img src="..." class="mr-3" alt="...">-->
+                        <div class="media-body">
+                            <h5 class="mt-0 mb-1">@current.AchievementName</h5>
+                            @current.AchievementDescription
+                            <br />
+                            @if (current.LinkedParameterValue.HasValue)
+                            {
+                                int percent = current.IsReceived ? 100 : (int)Math.Round(((double)current.LinkedParameterValue / (double)current.AchievementValue) * 100);
+                                string progressLabel = current.IsReceived ? $"{current.AchievementValue} / {current.AchievementValue}" : $"{current.LinkedParameterValue} / {current.AchievementValue}";
+
+                                <div class="progress mt-1 mb-1">
+                                    <div class="progress-bar bg-success" style="width: @percent%" role="progressbar" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">@(percent != 0 ? progressLabel : "")</div>
+                                    <div class="progress-bar bg-secondary" style="width: @(100 - percent)%" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">@(percent == 0 ? progressLabel : "")</div>
+                                </div>
+                            }
+                        </div>
+                    </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>

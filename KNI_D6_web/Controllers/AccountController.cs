@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
+using KNI_D6_web.Model.Database.Repositories;
 using KNI_D6_web.Model.Parameters;
-using KNI_D6_web.Services;
 using KNI_D6_web.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,14 +17,14 @@ namespace KNI_D6_web.Controllers
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly ApplicationDbContext dbContext;
-        private readonly IEmailService emailService;
+        private readonly IParameterValuesRepository parameterValuesRepository;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext dbContext, IEmailService emailService)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext dbContext, IParameterValuesRepository parameterValuesRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.dbContext = dbContext;
-            this.emailService = emailService;
+            this.parameterValuesRepository = parameterValuesRepository;
         }
 
         [HttpGet]
@@ -70,9 +71,11 @@ namespace KNI_D6_web.Controllers
                     await signInManager.SignInAsync(user, false);
 
                     var currentUser = await userManager.FindByNameAsync(model.Login);
-                    foreach (var parameter in dbContext.Parameters)
-                        dbContext.ParameterValues.Add(new ParameterValue() { ParameterId = parameter.Id, UserId = currentUser.Id, Value = 0 });
-                    await dbContext.SaveChangesAsync();
+                    await parameterValuesRepository.AddParameterValues(dbContext.Parameters.Select(parameter => new ParameterValue()
+                    {
+                        ParameterId = parameter.Id,
+                        UserId = currentUser.Id
+                    }));
 
                     result = RedirectToAction("Index", "Home");
                 }
@@ -157,8 +160,8 @@ namespace KNI_D6_web.Controllers
                     var code = await userManager.GeneratePasswordResetTokenAsync(user);
                     var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
-                    await emailService.SendEmailAsync(model.Email, "Reset Password",
-                        $"Для сброса пароля пройдите по ссылке: <a href='{callbackUrl}'>link</a>");
+                    //await emailService.SendEmailAsync(model.Email, "Reset Password",
+                    //    $"Для сброса пароля пройдите по ссылке: <a href='{callbackUrl}'>link</a>");
                 }
                 return View("ForgotPasswordConfirmation");
             }

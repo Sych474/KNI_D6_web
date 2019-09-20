@@ -13,6 +13,12 @@ namespace KNI_D6_web.Model
 
         public DateTime Date { get; set; }
 
+        public bool IsSpecial { get; set; } = false;
+
         public List<UserEvent> UserEvents { get; set; } = new List<UserEvent>();
+
+        public int? SemesterId { get; set; } = null;
+
+        public Semester Semester { get; set; }
     }
 }

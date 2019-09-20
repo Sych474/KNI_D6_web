@@ -28,18 +28,23 @@
             </div>
             <div class="form-group">
                 <label asp-for="ParameterId" class="control-label">Параметр</label>
-                <select asp-for="ParameterId" class="form-control" asp-items="Model.Parameters"></select>
+                <select asp-for="ParameterId" class="form-control" asp-items="ViewBag.Parameters"></select>
                 <span asp-validation-for="ParameterId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="GroupId" class="control-label">Группа</label>
-                <select asp-for="GroupId" class="form-control" asp-items="Model.AchievementGroups"></select>
+                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.AchievementGroups"></select>
                 <span asp-validation-for="GroupId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NumberInGroup" class="control-label">Номер в группе</label>
                 <input asp-for="NumberInGroup" class="form-control" />
                 <span asp-validation-for="NumberInGroup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SemesterId" class="control-label">Семестр</label>
+                <select asp-for="SemesterId" class="form-control" asp-items="ViewBag.SemestersSelectList"></select>
+                <span asp-validation-for="SemesterId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Добавить" class="btn btn-primary" />
@@ -49,6 +54,6 @@
 </div>
 
 <div>
-    <a class="btn btn-outline-primary" asp-action="Index">К списку достижений</a>
+    <a class="btn btn-outline-primary" asp-action="All">К списку достижений</a>
 </div>
 

@@ -23,5 +23,9 @@ namespace KNI_D6_web.Model.Achievements
         public AchievementType AchievementType { get; set; } = AchievementType.Custom;
 
         public int? AchievementValue { get; set; }
+
+        public int? SemesterId { get; set; } = null;
+
+        public Semester Semester { get; set; }
     }
 }

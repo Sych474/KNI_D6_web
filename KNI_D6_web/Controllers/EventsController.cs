@@ -6,6 +6,10 @@ using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database;
 using Microsoft.AspNetCore.Authorization;
 using KNI_D6_web.ViewModels.Events;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using KNI_D6_web.Model.Database.Repositories;
+using System.Collections.Generic;
+using System;
 
 namespace KNI_D6_web.Controllers
 {
@@ -13,21 +17,51 @@ namespace KNI_D6_web.Controllers
     public class EventsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ISemestersRepository semestersRepository;
 
-        public EventsController(ApplicationDbContext context)
+        public EventsController(ApplicationDbContext context, ISemestersRepository semestersRepository)
         {
             this.dbContext = context;
+            this.semestersRepository = semestersRepository;
         }
 
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+            var semester = await semestersRepository.FindCurrentSemesterAsync();
+            var events = semester != null ?
+                await dbContext.Events.Where(e => e.SemesterId == semester.Id || e.SemesterId == null).OrderBy(x => x.Date).ToListAsync() :
+                await dbContext.Events.OrderBy(x => x.Date).ToListAsync();
+
+            var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
+
+            var pastEvents = events.Except(futureEvents);
+
             var viewModel = new EventsViewModel()
             {
-                Events = await dbContext.Events.OrderBy(x => x.Date).ToListAsync(),
+                PastEvents = pastEvents,
+                FutureEvents = futureEvents
             };
+
             return View(viewModel);
+        }
+
+
+        [HttpGet, Route("[controller]/All")]
+        public async Task<IActionResult> All()
+        {
+            var events = await dbContext.Events.OrderByDescending(x => x.Date).ToListAsync();
+            var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
+            var pastEvents = events.Except(futureEvents);
+
+            var viewModel = new EventsViewModel()
+            {
+                PastEvents = pastEvents,
+                FutureEvents = futureEvents
+            };
+
+            return View("Index", viewModel);
         }
 
         [AllowAnonymous]
@@ -50,12 +84,14 @@ namespace KNI_D6_web.Controllers
 
         public IActionResult Create()
         {
+            ViewData["SemestersSelectList"] = CreateSemestersSelectList(null);
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Date")] Event @event)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
             if (ModelState.IsValid)
             {
@@ -63,33 +99,30 @@ namespace KNI_D6_web.Controllers
                 await dbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SemestersSelectList"] = CreateSemestersSelectList(@event.SemesterId);
             return View(@event);
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
+         
+            var entity = await dbContext.Events.FirstOrDefaultAsync(e => e.Id == id);
+            if (entity == null)
+                return NotFound();
 
-            var @event = await dbContext.Events.FindAsync(id);
-            if (@event == null)
-            {
-                return NotFound();
-            }
-            return View(@event);
+            ViewData["SemestersSelectList"] = CreateSemestersSelectList(null);
+            return View(entity);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
             if (id != @event.Id)
-            {
                 return NotFound();
-            }
-
+            
             if (ModelState.IsValid)
             {
                 try
@@ -110,6 +143,7 @@ namespace KNI_D6_web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SemestersSelectList"] = CreateSemestersSelectList(@event.SemesterId);
             return View(@event);
         }
 
@@ -199,5 +233,13 @@ namespace KNI_D6_web.Controllers
         {
             return dbContext.Events.Any(e => e.Id == id);
         }
+
+        private SelectList CreateSemestersSelectList(int? currentId)
+        {
+            var tmpList = dbContext.Semesters.Select(s => new CustomSelectListItem() { Name = s.Name, Id = s.Id }).ToList();
+            tmpList.Insert(0, new CustomSelectListItem() { Name = "Без семестра", Id = null });
+            return new SelectList(tmpList, "Id", "Name", currentId);
+        }
+
     }
 }

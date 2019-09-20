@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database;
-using KNI_D6_web.ViewModels.AchievementsProgress;
+using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using KNI_D6_web.ViewModels.Users;
 using KNI_D6_web.ViewModels.Visits;
 using Microsoft.AspNetCore.Authorization;
@@ -254,9 +254,9 @@ namespace KNI_D6_web.Controllers
             var result = EventVisitState.NotVisited;
 
             if (item.Date.Date >= DateTime.Now.Date)
-                return EventVisitState.NotHappendYet;
-            else if (visitedEventIds.Contains(item.Id))
-                return EventVisitState.Visited;
+                result = EventVisitState.NotHappendYet;
+            if (visitedEventIds.Contains(item.Id))
+                result = EventVisitState.Visited;
 
             return result;
         }
