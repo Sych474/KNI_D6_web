@@ -72,15 +72,13 @@
                 <ul class="list-unstyled">
                     @foreach (var item in Model.User.UserAchievements)
                     {
-                        <li class="media border bg-light border-secondary rounded rounded-lg p-2 m-1">
-                            <!--<img src="..." class="mr-3" alt="...">-->
+                        <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
                             <div class="media-body">
                                 <h5 class="mt-0 mb-1">@item.Achievement.Name</h5>
                                 @item.Achievement.Description
                                 <br />
                             </div>
                         </li>
-
                     }
                 </ul>
             </div>
@@ -99,62 +97,75 @@
         }
     </div>
 </div>
-<div class="mt-2">
-    <h2>Посещаемость</h2>
-    <table class="table table-hover">
+
+<div>
+    <h2>Посещения</h2>
+    <div class="pt-2">
         @if (Model.EventVisits.Any())
         {
-            if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin) )
-            {
-                @foreach (var item in Model.EventVisits)
-                {
-                    @switch (item.State)
+            <div class="container rounded rounded-lg mt-2 ">
+                <ul class="list-unstyled">
+                    @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
                     {
-                        case EventVisitState.Visited:
-                            <tr class="table-success">
-                                <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
-                            </tr>
-                            break;
-                        case EventVisitState.NotVisited:
-                            <tr class="table-danger">
-                                <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
-                            </tr>
-                            break;
-                        case EventVisitState.NotHappendYet:
-                            <tr class="table-secondary">
-                                <td>@item.EventName</td>
-                                <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
-                            </tr>
-                            break;
-                        default:
-                            break;
+                        @foreach (var item in Model.EventVisits)
+                        {
+                            @switch (item.State)
+                            {
+                                case EventVisitState.Visited:
+                                    <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                case EventVisitState.NotVisited:
+                                    <li class="media border alert-danger text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                case EventVisitState.NotHappendYet:
+                                    <li class="media border alert-secondary text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
-                }
-            }
-            else
-            {
-                @foreach (var item in Model.EventVisits.Where(i => i.State == EventVisitState.Visited))
-                {
-                    <tr class="table-success">
-                        <td>@item.EventName</td>
-                        <td>@item.Date.Date.ToString("dd/MM/yyyy")</td>
-                    </tr>
-                }
-            }
+                    else
+                    {
+                        @foreach (var item in Model.EventVisits.Where(i => i.State == EventVisitState.Visited))
+                        {
+                            <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                    @item.Date.ToString("dd/MM/yyyy")
+                                    <br />
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
         }
         else
         {
-            <tr class="">
-                <td>
-                    <h5>Посещений пока нет, но скоро будут!</h5>
-                </td>
-            </tr>
+            <h5>Посещений пока нет, но скоро будут!</h5>
         }
-    </table>
-</div>
+    </div>
 
+</div>
 <div>
     <a class="btn btn-outline-primary mt-4" asp-action="Index">К списку игроков</a>
 </div>
