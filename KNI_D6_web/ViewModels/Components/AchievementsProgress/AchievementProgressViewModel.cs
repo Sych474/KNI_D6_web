@@ -1,6 +1,6 @@
 ﻿using KNI_D6_web.Model.Achievements;
 
-namespace KNI_D6_web.ViewModels.AchievementsProgress
+namespace KNI_D6_web.ViewModels.Components.AchievementsProgress
 {
     public class AchievementProgressViewModel
     {
@@ -13,8 +13,6 @@ namespace KNI_D6_web.ViewModels.AchievementsProgress
         public int? AchievementValue { get; set; }
 
         public int NumberInGroup { get; set; }
-
-        public string LinkedParameterName { get; set; }
 
         public int? LinkedParameterValue { get; set; }
 

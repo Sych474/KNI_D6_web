@@ -7,45 +7,51 @@
 <h1>Мероприятия КНИ</h1>
 @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
 {
-    <form method="get" asp-area="" asp-controller="Events" asp-action="Create">
-        <button class="btn btn-outline-primary m-2" type="submit">Создать новое мероприятие</button>
-    </form>
+    <div class="text-center">
+        <form method="get" asp-area="" asp-controller="Events" asp-action="Create">
+            <button class="btn btn-outline-primary m-2" type="submit">Создать новое мероприятие</button>
+        </form>
+    </div>
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Название
-            </th>
-            <th>
-                Дата начала мероприятия
-            </th>
-            <th>
-                Действия
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Events)
+@{
+    int maxCardsInRow = 3;
+    int cardRows = (int)Math.Ceiling(Model.Events.Count() / (double)maxCardsInRow);
+}
+<div class="py-3">
+    <div class="container">
+        @for (int rowNumber = 0; rowNumber < cardRows; rowNumber++)
         {
-        <tr class="table-@(item.Date < DateTime.Now?"secondary":"success")">
-            <td>
-                @item.Name
-            </td>
-            <td>
-                @item.Date.ToString("dd/MM/yyyy");
-            </td>
-            <td>
-                <a class="btn btn-primary ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
-                @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
-                {
-                    <a class="btn btn-warning ml-1" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
-                    <a class="btn btn-danger ml-1" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
-                    <a class="btn btn-secondary ml-1" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
-                }
-            </td>
-        </tr>
+            int cardsInRow = maxCardsInRow;
+            if (rowNumber == cardRows - 1 && Model.Events.Count() % maxCardsInRow != 0)
+            {
+                cardsInRow = Model.Events.Count() % maxCardsInRow;
+            }
+        <div class="row hidden-md-up">
+            @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
+            {
+                var item = Model.Events.ElementAt(rowNumber * maxCardsInRow + columnNumber);
+                <div class="col-md-4">
+                    <div class="card border-@(item.Date < DateTime.Now?"secondary":"success") alert-@(item.Date < DateTime.Now?"secondary":"success")">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">@item.Name</h5>
+                            <p>@item.Date.ToString("dd/MM/yyyy")</p>
+                            <p class="card-text">@item.Description</p>
+                            
+                            <a class="btn btn-outline-@(item.Date < DateTime.Now?"secondary":"success") ml-1" asp-area="" asp-controller="Events" asp-action="Details" asp-route-id="@item.Id"> Подробнее </a>
+                        </div>
+                        <div class="card-footer">
+                            @if (User.IsInRole(UserRoles.Admin) || User.IsInRole(UserRoles.Moderator))
+                            {
+                                <a class="btn btn-outline-dark ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id"> Изменить </a>
+                                <a class="btn btn-outline-danger ml-1 btn-sm" asp-area="" asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id"> Удалить </a>
+                                <a class="btn btn-outline-info ml-1 btn-sm" asp-controller="Events" asp-action="EventVisitors" asp-route-id="@item.Id"> Посещаемость </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>

@@ -17,7 +17,7 @@ namespace KNI_D6_web.Model.Achievements
             this.achievementsCalculator = achievementsCalculator;
         }
 
-        public async Task<int?> AddCalculatedAchievement(string name, string description, int value, int parameterId, int achievementGroupId, int numberInGroup)
+        public async Task<int?> AddCalculatedAchievement(string name, string description, int value, int parameterId, int achievementGroupId, int numberInGroup, int? semesterId)
         {
             int? result = null;
 
@@ -30,7 +30,8 @@ namespace KNI_D6_web.Model.Achievements
                     AchievementValue = value,
                     AchievementType = AchievementType.Calculated,
                     AchievementsGroupId = achievementGroupId,
-                    NumberInGroup = numberInGroup
+                    NumberInGroup = numberInGroup,
+                    SemesterId = semesterId
                 };
 
                 await dbContext.Achievements.AddAsync(achievement);
@@ -51,7 +52,7 @@ namespace KNI_D6_web.Model.Achievements
             return result;
         }
 
-        public async Task<int?> AddCustomAchievement(string name, string description, int achievementGroupId, int numberInGroup)
+        public async Task<int?> AddCustomAchievement(string name, string description, int achievementGroupId, int numberInGroup, int? semesterId)
         {
             int? result = null;
 
@@ -64,7 +65,8 @@ namespace KNI_D6_web.Model.Achievements
                     AchievementValue = null,
                     AchievementType = AchievementType.Custom,
                     AchievementsGroupId = achievementGroupId,
-                    NumberInGroup = numberInGroup
+                    NumberInGroup = numberInGroup,
+                    SemesterId = semesterId
                 };
 
                 await dbContext.Achievements.AddAsync(achievement);

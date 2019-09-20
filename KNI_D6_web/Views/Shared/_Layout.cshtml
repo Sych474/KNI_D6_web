@@ -41,16 +41,39 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Admins">Aдмины</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Achievements" asp-action="Index">Достижения</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown text-dark">
+                                <a class="nav-link dropdown-toggle text-dark" id="navbarDropdownAchievements" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Достижения
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownAchievements">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Achievements" asp-action="Index">Достижения</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Achievements" asp-action="Progress" asp-route-userLogin="@User.Identity.Name">Прогресс</a>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Achievements" asp-action="Index">Достижения</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Мероприятия</a>
                         </li>
                         @if (User.IsInRole(UserRoles.Admin))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Parameters" asp-action="Index">Параметры</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Админ-панель
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Achievements" asp-action="All">Все достижения</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Semesters" asp-action="Index">Семестры</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Parameters" asp-action="Index">Параметры</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="All">Все мероприятия</a>
+                                </div>
                             </li>
                         }
                     </ul>

@@ -1,4 +1,4 @@
-﻿using KNI_D6_web.ViewModels.AchievementsProgress;
+﻿using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using System.Collections.Generic;
 
 namespace KNI_D6_web.ViewModels.Users

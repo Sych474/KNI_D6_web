@@ -1,67 +1,9 @@
-﻿@model KNI_D6_web.ViewModels.AchievementsProgress.AchievementsProgressViewModel
-@using KNI_D6_web.Model;
+﻿@model KNI_D6_web.ViewModels.Achievements.AchievementsProgressViewModel
 @{
     ViewData["Title"] = "Прогресс достижений";
 }
 
-
-<h1>Прогресс достижений пользователя @User.Identity.Name</h1>
-
-@if (User.IsInRole(UserRoles.Admin))
-{
-    <div class="text-center">
-        <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateValueAchievement">Добавить вычисляемое достижение</a>
-        <a class="btn btn-outline-primary m-2" asp-controller="Achievements" asp-action="CreateCustomAchievement">Добавить невычисляемое достижение</a>
-        <a class="btn btn-outline-primary m-2" asp-controller="AchievementGroups" asp-action="Index">Группы достижений</a>
-    </div>
-}
-
+<h1>Прогресс достижений пользователя @Model.Login</h1>
 <div>
-    <div class="py-5">
-        @foreach (var group in Model.AchievementsProgressInGroups)
-        {
-            <div class="container rounded rounded-lg m-2 ">
-                <ul class="list-unstyled">
-                    @foreach (var item in group)
-                    {
-                        <li class="media border bg-light) border-secondary rounded rounded-lg p-2 m-1">
-                            <!--<img src="..." class="mr-3" alt="...">-->
-                            <div class="media-body">
-                                <h5 class="mt-0 mb-1">@item.AchievementName</h5>
-                                @item.AchievementDescription
-                                <br />
-                                @if (item.LinkedParameterValue.HasValue)
-                                {
-                                    int percent = item.IsReceived ? 100 : (int)Math.Round(((double)item.LinkedParameterValue / (double)item.AchievementValue) * 100);
-                                    string progressLabel = item.IsReceived ? $"{item.AchievementValue} / {item.AchievementValue}" : $"{item.LinkedParameterValue} / {item.AchievementValue}";
-
-                                    <div class="progress mt-1 mb-1">
-                                        <div class="progress-bar bg-success" style="width: @percent%" role="progressbar" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">@(percent != 0 ? progressLabel : "")</div>
-                                        <div class="progress-bar bg-secondary" style="width: @(100 - percent)%" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">@(percent == 0 ? progressLabel : "")</div>
-                                    </div>
-                                }
-                                @if (User.IsInRole(UserRoles.Admin))
-                                {
-                            <div class="mt-1">
-                                @if (item.AchievementType == KNI_D6_web.Model.Achievements.AchievementType.Calculated)
-                                {
-                                    <a class="btn btn-sm btn-warning ml-1" asp-action="EditCalculated" asp-route-id="@item.AchievementId"> Изменить </a>
-                                }
-                                @if (item.AchievementType == KNI_D6_web.Model.Achievements.AchievementType.Custom)
-                                {
-                                    <a class="btn btn-sm btn-warning ml-1" asp-action="EditCustom" asp-route-id="@item.AchievementId"> Изменить </a>
-                                }
-                                <a class="btn btn-sm btn-primary ml-1" asp-action="Details" asp-route-id="@item.AchievementId"> Подробнее </a>
-                                <a class="btn btn-sm btn-danger ml-1" asp-action="Delete" asp-route-id="@item.AchievementId"> Удалить </a>
-                            </div>
-                                }
-                            </div>
-                        </li>
-
-                    }
-                </ul>
-            </div>
-            <br>
-        }
-    </div>
+    @await Component.InvokeAsync("AchievementsProgress", new { login = Model.Login })
 </div>

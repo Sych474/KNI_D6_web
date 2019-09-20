@@ -22,6 +22,8 @@ namespace KNI_D6_web.ViewModels.Achievements
         //now achievement can have one or zero parameter
         public int? AchievementParameterId { get; set; }
 
+        public int? SemesterId { get; set; }
+
         public EditAchievementViewModel()
         {
         }
@@ -36,6 +38,7 @@ namespace KNI_D6_web.ViewModels.Achievements
             AchievementType = achievement.AchievementType;
             AchievementValue = achievement.AchievementValue;
             AchievementParameterId = achievementParameterId;
+            SemesterId = achievement.SemesterId;
         }
 
         public bool UpdateAchievement(Achievement achievement)
@@ -50,6 +53,7 @@ namespace KNI_D6_web.ViewModels.Achievements
                 achievement.Description = Description;
                 achievement.AchievementType = AchievementType;
                 achievement.AchievementValue = AchievementValue;
+                achievement.SemesterId = SemesterId;
                 result = true;
             }
             return result;

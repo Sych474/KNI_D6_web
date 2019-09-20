@@ -8,10 +8,10 @@ namespace KNI_D6_web.ViewModels.Achievements
 
         public string AhievementDescription { get; set; }
 
-        public SelectList AchievementGroups { get; set; }
-
         public int GroupId { get; set; }
 
         public int NumberInGroup { get; set; }
+
+        public int? SemesterId { get; set; } = null;
     }
 }
