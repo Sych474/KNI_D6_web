@@ -38,7 +38,6 @@ namespace KNI_D6_web.Components
 
             var groups = await dbContext?.AchievementGroups?
                 .Include(ag => ag.Ahievements)?
-                .ThenInclude(a => a.AchievementParameters)?
                 .ThenInclude(ap => ap.Parameter)?
                 .ToListAsync();
 
@@ -60,8 +59,7 @@ namespace KNI_D6_web.Components
 
                 foreach (var achievement in filteredAchievements)
                 {
-                    var linkedParameter = achievement.AchievementParameters.FirstOrDefault()?.Parameter;
-                    var linkedParameterValue = user.ParameterValues.Where(pv => pv.ParameterId == linkedParameter?.Id).FirstOrDefault();
+                    var linkedParameterValue = user.ParameterValues.Where(pv => pv.ParameterId == achievement.ParameterId).FirstOrDefault();
 
                     var progress = new AchievementProgressViewModel()
                     {

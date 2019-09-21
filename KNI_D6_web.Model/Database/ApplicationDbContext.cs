@@ -17,8 +17,6 @@ namespace KNI_D6_web.Model.Database
 
         public DbSet<Achievement> Achievements { get; set; }
 
-        public DbSet<AchievementParameter> AchievementParameters { get; set; }
-
         public DbSet<Event> Events { get; set; }
 
         public DbSet<UserEvent> UserEvents { get; set; }
@@ -49,6 +47,10 @@ namespace KNI_D6_web.Model.Database
                 entity.HasOne(a => a.Semester)
                     .WithMany(s => s.Achievements)
                     .HasForeignKey(n => n.SemesterId);
+
+                entity.HasOne(a => a.Parameter)
+                    .WithMany(s => s.Achievements)
+                    .HasForeignKey(n => n.ParameterId);
             });
 
             modelBuilder.Entity<AchievementsGroup>()
@@ -77,23 +79,6 @@ namespace KNI_D6_web.Model.Database
             modelBuilder.Entity<Parameter>(entity => 
             {
                 entity.Property(p => p.Name).IsRequired();
-            });
-
-            modelBuilder.Entity<AchievementParameter>(entity =>
-            {
-                entity.HasKey(ap => new { ap.ParameterId, ap.AchievementId});
-
-                entity.HasOne(ap => ap.Parameter)
-                    .WithMany(p => p.AchievementParameters)
-                    .HasForeignKey(ap => ap.ParameterId)
-                    .HasPrincipalKey(p => p.Id)
-                    .IsRequired();
-
-                entity.HasOne(ap => ap.Achievement)
-                    .WithMany(a => a.AchievementParameters)
-                    .HasForeignKey(ap => ap.AchievementId)
-                    .HasPrincipalKey(a => a.Id)
-                    .IsRequired();
             });
 
             modelBuilder.Entity<Event>(entity => 

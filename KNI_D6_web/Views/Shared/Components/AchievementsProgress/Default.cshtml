@@ -1,5 +1,5 @@
 ﻿@model KNI_D6_web.ViewModels.Components.AchievementsProgress.AchievementsProgressViewModel
-@using KNI_D6_web.Model;
+@using KNI_D6_web.Model.Achievements;
 
 <div>
     <div class="py-4">
@@ -28,7 +28,7 @@
                             <h5 class="mt-0 mb-1">@current.AchievementName</h5>
                             @current.AchievementDescription
                             <br />
-                            @if (current.LinkedParameterValue.HasValue)
+                            @if (current.AchievementType == AchievementType.Calculated && current.LinkedParameterValue.HasValue)
                             {
                                 int percent = current.IsReceived ? 100 : (int)Math.Round(((double)current.LinkedParameterValue / (double)current.AchievementValue) * 100);
                                 string progressLabel = current.IsReceived ? $"{current.AchievementValue} / {current.AchievementValue}" : $"{current.LinkedParameterValue} / {current.AchievementValue}";
