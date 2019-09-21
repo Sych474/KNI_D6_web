@@ -21,8 +21,6 @@ namespace KNI_D6_web.Model.Database.Initialization
             await AddAdminUser(userManager, configuration.AdminLogin, configuration.AdminPassword, configuration.AdminEmail);
 
             await AddParameters(dbContext, configuration.Parameters);
-
-            await AddParameterValues(dbContext, configuration.Parameters, configuration.ParameterValuesPresets);
         }
 
         private static async Task AddAdminUser(UserManager<User> userManager, string adminLogin, string adminPassword, string adminEmail)
