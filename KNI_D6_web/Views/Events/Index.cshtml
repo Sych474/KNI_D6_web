@@ -29,7 +29,7 @@
             {
                 cardsInRow = Model.FutureEvents.Count() % maxCardsInRow;
             }
-            <div class="row hidden-md-up">
+            <div class="row hidden-md-up p-2">
                 @for (int columnNumber = 0; columnNumber < cardsInRow; columnNumber++)
                 {
                     var item = Model.FutureEvents.ElementAt(rowNumber * maxCardsInRow + columnNumber);
