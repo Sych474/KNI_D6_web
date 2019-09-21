@@ -12,18 +12,9 @@
     ],
 
     "parameterValuesPresets": [
-      {
-        "UserLogin": "sych",
-        "ParameterName": "Число проведенных длинных НРИ (3 и более партий)",
-        "Value": 2
-      }
     ],
 
     "userAchievementsPresets": [
-      {
-        "UserLogin": "sych",
-        "achievementName": "Мастер"
-      }
     ],
     "adminLogin": "sych",
     "adminPassword": "Pa$$w0rd",
