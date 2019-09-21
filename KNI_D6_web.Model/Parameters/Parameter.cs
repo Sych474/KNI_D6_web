@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using KNI_D6_web.Model.Achievements;
+using System.Collections.Generic;
 
 namespace KNI_D6_web.Model.Parameters
 {
@@ -10,6 +11,6 @@ namespace KNI_D6_web.Model.Parameters
 
         public List<ParameterValue> ParameterValues { get; set; } = new List<ParameterValue>();
 
-        public List<AchievementParameter> AchievementParameters { get; set; } = new List<AchievementParameter>();
+        public List<Achievement> Achievements { get; set; } = new List<Achievement>();
     }
 }

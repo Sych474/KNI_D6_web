@@ -31,19 +31,11 @@ namespace KNI_D6_web.Model.Achievements
                     AchievementType = AchievementType.Calculated,
                     AchievementsGroupId = achievementGroupId,
                     NumberInGroup = numberInGroup,
-                    SemesterId = semesterId
-                };
-
-                await dbContext.Achievements.AddAsync(achievement);
-                await dbContext.SaveChangesAsync();
-
-                var achievementParameter = new AchievementParameter()
-                {
-                    AchievementId = achievement.Id,
+                    SemesterId = semesterId,
                     ParameterId = parameterId
                 };
 
-                await dbContext.AchievementParameters.AddAsync(achievementParameter);
+                await dbContext.Achievements.AddAsync(achievement);
                 await dbContext.SaveChangesAsync();
 
                 result = achievement.Id;
@@ -140,8 +132,8 @@ namespace KNI_D6_web.Model.Achievements
 
         public async Task CheckAndUpdateСalculatedAchievementForUser(string userId, int achievementId)
         {
-            var achievement = await dbContext.Achievements.Include(a => a.AchievementParameters).FirstOrDefaultAsync(a => a.Id == achievementId);
-            if (achievement != null && achievement.AchievementParameters.Any())
+            var achievement = await dbContext.Achievements.Include(a => a.Parameter).FirstOrDefaultAsync(a => a.Id == achievementId);
+            if (achievement != null && achievement.Parameter != null)
             {
                 if (await achievementsCalculator.IsDone(achievementId, userId))
                         await AddAchievementToUser(achievementId, userId);   
@@ -154,6 +146,20 @@ namespace KNI_D6_web.Model.Achievements
             {
                 await CheckAndUpdateСalculatedAchievementForUser(userId, achievementId);
             }
+        }
+
+        public async Task<int?> AddAchievement(Achievement achievement)
+        {
+            int? result = null;
+
+            if (!await dbContext.Achievements.AnyAsync(a => a.Name == achievement.Name))
+            {
+                await dbContext.Achievements.AddAsync(achievement);
+                await dbContext.SaveChangesAsync();
+
+                result = achievement.Id;
+            }
+            return result;
         }
     }
 }

@@ -43,7 +43,7 @@
             Связанный параметр
         </dt>
         <dd class="col-sm-10">
-            @(Model.AchievementParameters.Any() ? Model.AchievementParameters.First().Parameter.Name : "Нет связанного параметра")
+            @(Model.Parameter != null ? Model.Parameter.Name : "Нет связанного параметра")
         </dd>
         <dt class="col-sm-2">
             Значение параметра для получения достижения

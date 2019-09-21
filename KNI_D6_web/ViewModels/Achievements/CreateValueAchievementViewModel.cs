@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using KNI_D6_web.Model.Achievements;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KNI_D6_web.ViewModels.Achievements
 {
@@ -17,5 +18,7 @@ namespace KNI_D6_web.ViewModels.Achievements
         public int NumberInGroup { get; set; }
 
         public int? SemesterId { get; set; }
+
+        public AchievementType AchievementType { get; set; }
     }
 }

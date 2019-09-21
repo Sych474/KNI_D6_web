@@ -19,7 +19,7 @@ namespace KNI_D6_web.Model.Achievements
             var result = false;
 
             var achievement = await dbContext.Achievements
-                .Include(a => a.AchievementParameters).ThenInclude(ap => ap.Parameter)
+                .Include(a => a.Parameter)
                 .FirstOrDefaultAsync(a => a.Id == achievementId);
 
             if (achievement == null)
@@ -49,15 +49,13 @@ namespace KNI_D6_web.Model.Achievements
 
         private bool IsValueAchievementDone(Achievement achievement, User user)
         {
-            var achievementParameter = achievement.AchievementParameters.FirstOrDefault();
-
             if (!achievement.AchievementValue.HasValue)
                 throw new AchievementCalculatorException("ValueAchievement should have NOT null value");
 
-            if (achievement.AchievementParameters.Count != 1 || achievementParameter == null)
-                throw new AchievementCalculatorException("In valueAchievement should be one parameter");
+            if (achievement.Parameter == null)
+                throw new AchievementCalculatorException("Achievement should have parameter");
 
-            var parameterValue = user.ParameterValues.FirstOrDefault(pv => pv.ParameterId == achievementParameter.ParameterId);
+            var parameterValue = user.ParameterValues.FirstOrDefault(pv => pv.ParameterId == achievement.ParameterId);
 
             return parameterValue.Value >= achievement.AchievementValue;
         }
