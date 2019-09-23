@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database.Repositories;
+using KNI_D6_web.Model.Database.Repositories.Exceptions;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace KNI_D6_web.Controllers
 {
@@ -42,14 +45,11 @@ namespace KNI_D6_web.Controllers
             IActionResult result = View(parameter);
             if (ModelState.IsValid)
             {
+                //TO_DO try-catch
                 dbContext.Add(parameter);
                 await dbContext.SaveChangesAsync();
 
-                await parameterValuesRepository.AddParameterValues(dbContext.Users.Select(user => new ParameterValue()
-                {
-                    ParameterId = parameter.Id,
-                    UserId = user.Id
-                }));
+                await parameterValuesRepository.AddParameterValuesForParameterAsync(parameter.Id);
 
                 result = RedirectToAction(nameof(Index));
             }
@@ -133,11 +133,22 @@ namespace KNI_D6_web.Controllers
         {
             IActionResult result = NotFound(parameterId);
 
-            if (await parameterValuesRepository.IncrementParamenterValueForUser(parameterId, userId))
+            try
             {
+                await parameterValuesRepository.IncrementParamenterValueForUserAsync(parameterId, userId);
+
                 await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }
+            catch (EntityNotFoundException ex)
+            {
+                result = NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+            
             return result;
         }
 
@@ -146,11 +157,22 @@ namespace KNI_D6_web.Controllers
         {
             IActionResult result = NotFound(parameterId);
 
-            if (await parameterValuesRepository.DecrementParamenterValueForUser(parameterId, userId))
+            try
             {
+                await parameterValuesRepository.DecrementParamenterValueForUserAsync(parameterId, userId);
+
                 await achievementsManager.CheckAndUpdateСalculatedAchievementsForUser(userId, dbContext.Achievements.Select(a => a.Id));
                 result = Redirect($"/Users/{userId}");
             }
+            catch (EntityNotFoundException ex)
+            {
+                result = NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+
             return result;
         }
 

@@ -12,15 +12,13 @@ namespace KNI_D6_web.Model.Database.Initialization
 {
     public class DatabaseInitializer
     {
-        private static readonly int DefaultValue = 0;
-
         public static async Task InitializeDatabase(ApplicationDbContext dbContext, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, DbInitializationConfiguration configuration)
         {
             await AddUserRoles(roleManager);
 
-            await AddAdminUser(userManager, configuration.AdminLogin, configuration.AdminPassword, configuration.AdminEmail);
-
             await AddParameters(dbContext, configuration.Parameters);
+
+            await AddAdminUser(userManager, configuration.AdminLogin, configuration.AdminPassword, configuration.AdminEmail);
         }
 
         private static async Task AddAdminUser(UserManager<User> userManager, string adminLogin, string adminPassword, string adminEmail)
@@ -62,7 +60,7 @@ namespace KNI_D6_web.Model.Database.Initialization
             }
         }
 
-        private static async Task AddParameterValues(ApplicationDbContext dbContext, IEnumerable<string> parameterNames, IEnumerable<ParameterValuesPreset> parameterValuesPresets)
+        private static async Task AddParameterValues(ApplicationDbContext dbContext, IEnumerable<Parameter> parameters, IEnumerable<ParameterValuesPreset> parameterValuesPresets)
         {
             foreach (var item in parameterValuesPresets)
             {
@@ -73,14 +71,14 @@ namespace KNI_D6_web.Model.Database.Initialization
                     var parameterValue = dbContext.ParameterValues.Where(x => x.UserId == user.Id && x.ParameterId == parameter.Id).FirstOrDefault();
                     if (parameterValue == null)
                         await dbContext.ParameterValues.AddAsync(new ParameterValue() { UserId = user.Id, ParameterId = parameter.Id, Value = item.Value });
-                    else if (parameterValue.Value == DefaultValue)
+                    else if (parameterValue.Value == ParameterValue.DefaultValue)
                         parameterValue.Value = item.Value;                        
                     await dbContext.SaveChangesAsync();
                 }
             }
 
             //add Default values
-            foreach (var user in dbContext.Users.Include(u=>u.ParameterValues).ThenInclude(pv => pv.Parameter))
+            /*foreach (var user in dbContext.Users.Include(u=>u.ParameterValues).ThenInclude(pv => pv.Parameter))
             {
                 foreach (var name in parameterNames)
                 {
@@ -95,6 +93,7 @@ namespace KNI_D6_web.Model.Database.Initialization
                     }
                 }
             }
+            */
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
-using KNI_D6_web.Model.Database;
 using KNI_D6_web.Model.Database.Repositories;
-using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +15,12 @@ namespace KNI_D6_web.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        private readonly ApplicationDbContext dbContext;
         private readonly IParameterValuesRepository parameterValuesRepository;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext dbContext, IParameterValuesRepository parameterValuesRepository)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IParameterValuesRepository parameterValuesRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.dbContext = dbContext;
             this.parameterValuesRepository = parameterValuesRepository;
         }
 
@@ -57,34 +54,43 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             IActionResult result = View(model);
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return result;
+
+            User user = new User
             {
-                User user = new User
-                {
-                    Email = model.Email,
-                    UserName = model.Login,
-                };
+                Email = model.Email,
+                UserName = model.Login,
+            };
+            var identityResult = await userManager.CreateAsync(user, model.Password);
 
-                var identityResult = await userManager.CreateAsync(user, model.Password);
-                if (identityResult.Succeeded)
-                {
-                    await signInManager.SignInAsync(user, false);
+            if (identityResult.Succeeded)
+            {
+                await signInManager.SignInAsync(user, false);
 
-                    var currentUser = await userManager.FindByNameAsync(model.Login);
-                    await parameterValuesRepository.AddParameterValues(dbContext.Parameters.Select(parameter => new ParameterValue()
+                var currentUser = await userManager.FindByNameAsync(model.Login);
+                if (currentUser != null)
+                {
+                    try
                     {
-                        ParameterId = parameter.Id,
-                        UserId = currentUser.Id
-                    }));
-
-                    result = RedirectToAction("Index", "Home");
+                        await parameterValuesRepository.AddAllParameterValuesForUserAsync(currentUser.Id);
+                        result = RedirectToAction("Index", "Home");
+                    }
+                    catch (Exception ex)
+                    {
+                        result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+                    }
                 }
                 else
                 {
-                    foreach (var error in identityResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
+                    ModelState.AddModelError(string.Empty, $"Internal error on getting user with Id {model.Login}, please note developers");
+                }
+            }
+            else
+            {
+                foreach (var error in identityResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
             return result;
@@ -96,19 +102,22 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             IActionResult result = View(model);
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return result;
+            
+            var signInResult = await signInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, false);
+            if (signInResult.Succeeded)
             {
-                var signInResult = await signInManager.PasswordSignInAsync(model.Login, model.Password, model.RememberMe, false);
-                if (signInResult.Succeeded)
-                {
-                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))                
-                        result = Redirect(model.ReturnUrl);
-                    else
-                        result = RedirectToAction("Index", "Home");
-                }
+                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))                
+                    result = Redirect(model.ReturnUrl);
                 else
-                    ModelState.AddModelError("", "Неверный логин и (или) пароль");
+                    result = RedirectToAction("Index", "Home");
             }
+            else
+            {
+                ModelState.AddModelError("", "Неверный логин и (или) пароль");
+            }
+            
             return result;
         }
 
@@ -140,6 +149,7 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
+        /*
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
@@ -200,5 +210,6 @@ namespace KNI_D6_web.Controllers
             }
             return View(model);
         }
+        */
     }
 }
