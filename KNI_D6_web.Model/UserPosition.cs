@@ -14,7 +14,7 @@ namespace KNI_D6_web.Model
         HonoraryMember = 1,
         [Description("Админ"), Display(Name = "Админ")]
         Admin = 2,
-        [Description("Сектерать"), Display(Name = "Сектерать")]
+        [Description("Секретарь"), Display(Name = "Секретарь")]
         Secretary = 3,
         [Description("Председатель"), Display(Name = "Председатель")]
         Chairman = 4

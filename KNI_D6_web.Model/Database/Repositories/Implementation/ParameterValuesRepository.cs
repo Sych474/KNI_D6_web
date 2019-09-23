@@ -1,106 +1,86 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using KNI_D6_web.Model.Database.Repositories.Exceptions;
 using KNI_D6_web.Model.Parameters;
 using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Model.Database.Repositories.Implementation
 {
-    public class ParameterValuesRepository : IParameterValuesRepository
+    public class ParameterValuesRepository : BaseRepository, IParameterValuesRepository
     {
-        private readonly ApplicationDbContext context;
-
-        public ParameterValuesRepository(ApplicationDbContext context)
+        public ParameterValuesRepository(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
         }
 
-        public async Task<bool> AddParameterValues(IEnumerable<ParameterValue> entities)
+        public async Task AddAllParameterValuesForUserAsync(string userId)
         {
-            bool result = true;
-            try
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                throw new EntityNotFoundException($"user with id {userId} not found");
+
+            var parameterValues = context.Parameters.Select(p => new ParameterValue()
             {
-                context.ParameterValues.AddRange(entities);
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                result = false;
-            }
-            
-            return result;
+                UserId = userId,
+                ParameterId = p.Id,
+                Value = ParameterValue.DefaultValue
+            });
+
+            await context.ParameterValues.AddRangeAsync(parameterValues);
+            await context.SaveChangesAsync();
         }
 
-        public async Task<bool> DecrementParamenterValueForUser(int parameterId, string userId)
+        public async Task AddParameterValuesForParameterAsync(int parameterId)
         {
-            bool result = true;
+            var parameter = await context.Parameters.FirstOrDefaultAsync(u => u.Id == parameterId);
+
+            if (parameter == null)
+                throw new EntityNotFoundException($"parameter with id {parameterId} not found");
+
+            var parameterValues = context.Users.Select(u => new ParameterValue()
+            {
+                UserId = u.Id,
+                ParameterId = parameterId,
+                Value = ParameterValue.DefaultValue
+            });
+
+            await context.ParameterValues.AddRangeAsync(parameterValues);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DecrementParamenterValueForUserAsync(int parameterId, string userId)
+        {
             var parameterValue = await context.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
-            if (parameterValue != null)
-            {
-                try
-                {
-                    parameterValue.Value--;
-                    context.ParameterValues.Update(parameterValue);
+            if (parameterValue == null)
+                throw new EntityNotFoundException($"parameterValue for user with id {userId} and parameter with id {parameterValue} not found");
 
-                    await context.SaveChangesAsync();
-                }
-                catch (DbUpdateException)
-                {
-                    result = false;
-                }
-            }
-            else
-            {
-                result = false;
-            }
-            return result;
+            parameterValue.Value--;
+            context.ParameterValues.Update(parameterValue);
+
+            await context.SaveChangesAsync();
         }
 
-        public async Task<bool> IncrementParamenterValueForUser(int parameterId, string userId)
+        public async Task IncrementParamenterValueForUserAsync(int parameterId, string userId)
         {
-            bool result = true;
             var parameterValue = await context.ParameterValues.FirstOrDefaultAsync(pv => pv.ParameterId == parameterId && pv.UserId == userId);
-            if (parameterValue != null)
-            {
-                try
-                {
-                    parameterValue.Value++;
-                    context.ParameterValues.Update(parameterValue);
+            if (parameterValue == null)
+                throw new EntityNotFoundException($"parameterValue for user with id {userId} and parameter with id {parameterValue} not found");
+            parameterValue.Value++;
+            context.ParameterValues.Update(parameterValue);
 
-                    await context.SaveChangesAsync();
-                }
-                catch (DbUpdateException)
-                {
-                    result = false;
-                }
-            }
-            else
-            {
-                result = false;
-            }
-            return result;
+            await context.SaveChangesAsync();
         }
 
-        public async Task<bool> ResetParameterValuesById(int parameterId, int newValue = ParameterValue.DefaultValue)
+        public async Task ResetParameterValuesByIdAsync(int parameterId, int newValue = ParameterValue.DefaultValue)
         {
-            bool result = true;
-            try
-            {
-                var parameterValues = await context.ParameterValues.Where(pv => pv.ParameterId == parameterId).ToListAsync();
+            var parameterValues = await context.ParameterValues.Where(pv => pv.ParameterId == parameterId).ToListAsync();
 
-                foreach (var item in parameterValues)
-                {
-                    item.Value = newValue;
-                }
-                context.ParameterValues.UpdateRange(parameterValues);
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
+            foreach (var item in parameterValues)
             {
-                result = false;
+                item.Value = newValue;
             }
-
-            return result;
+            context.ParameterValues.UpdateRange(parameterValues);
+            await context.SaveChangesAsync();
         }
     }
 }

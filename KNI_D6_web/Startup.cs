@@ -56,6 +56,7 @@ namespace KNI_D6_web
             services.AddTransient<IAchievementsManager, AchievementsManager>();
 
             services.AddTransient<ISemestersRepository, SemestersRepository>();
+            services.AddTransient<IParametersRepository, ParametersRepository>();
             services.AddTransient<IParameterValuesRepository, ParameterValuesRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -106,11 +107,13 @@ namespace KNI_D6_web
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope())
             {
-                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                var parametersRepository = serviceScope.ServiceProvider.GetService<IParametersRepository>();
+                var parameterValuesRepository = serviceScope.ServiceProvider.GetService<IParameterValuesRepository>();
                 using (var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>())
                 using (var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>())
                 {
-                    await DatabaseInitializer.InitializeDatabase(context, userManager, roleManager, DbInitializationConfiguration);
+                    var initializer = new DatabaseInitializer(userManager, roleManager, parametersRepository, parameterValuesRepository);
+                    await initializer.InitializeDatabase(DbInitializationConfiguration);
                 }
             }
         }
