@@ -11,20 +11,21 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
         {
         }
 
-        public async Task<bool> AddParameterAsync(Parameter entity)
+        public async Task<Parameter> AddParameterAsync(Parameter entity)
         {
-            bool result = true;
-            try
-            {
-                context.Parameters.Add(entity);
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                result = false;
-            }
+            context.Parameters.Add(entity);
+            await context.SaveChangesAsync();
+            return entity;    
+        }
 
-            return result;
+        public async Task<Parameter> FindParameterByIdAsync(int id)
+        {
+            return await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<Parameter> FindParameterByNameAsync(string name)
+        {
+            return await context.Parameters.FirstOrDefaultAsync(p => p.Name == name);
         }
 
         public Task<List<Parameter>> GetParametersAsync()
@@ -32,40 +33,20 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
             return context.Parameters.ToListAsync();
         }
 
-        public async Task<bool> RemoveParameterByIdAsync(int id)
+        public async Task RemoveParameterByIdAsync(int id)
         {
-            bool result = true;
-            try
+            var parameter = await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
+            if (parameter == null)
             {
-                var parameter = await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
-                if (parameter != null)
-                {
-                    context.Parameters.Remove(parameter);
-                    await context.SaveChangesAsync();
-                }
-            }
-            catch (DbUpdateException)
-            {
-                result = false;
-            }
-
-            return result;
-        }
-
-        public async Task<bool> UpdateParameterAsync(Parameter entity)
-        {
-            bool result = true;
-            try
-            {
-                context.Parameters.Update(entity);
+                context.Parameters.Remove(parameter);
                 await context.SaveChangesAsync();
             }
-            catch (DbUpdateException)
-            {
-                result = false;
-            }
+        }
 
-            return result;
+        public async Task UpdateParameterAsync(Parameter entity)
+        {
+            context.Parameters.Update(entity);
+            await context.SaveChangesAsync();
         }
     }
 }
