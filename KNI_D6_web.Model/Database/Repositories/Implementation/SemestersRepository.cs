@@ -4,13 +4,10 @@ using System.Threading.Tasks;
 
 namespace KNI_D6_web.Model.Database.Repositories.Implementation
 {
-    public class SemestersRepository : ISemestersRepository
+    public class SemestersRepository : BaseRepository, ISemestersRepository
     {
-        private readonly ApplicationDbContext context;
-
-        public SemestersRepository(ApplicationDbContext context)
+        public SemestersRepository(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
         }
 
         public async Task<bool> AddSemesterAsync(Semester entity)

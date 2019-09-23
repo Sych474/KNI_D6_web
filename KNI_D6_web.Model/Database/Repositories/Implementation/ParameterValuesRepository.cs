@@ -6,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KNI_D6_web.Model.Database.Repositories.Implementation
 {
-    public class ParameterValuesRepository : IParameterValuesRepository
+    public class ParameterValuesRepository : BaseRepository, IParameterValuesRepository
     {
-        private readonly ApplicationDbContext context;
-
-        public ParameterValuesRepository(ApplicationDbContext context)
+        public ParameterValuesRepository(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
         }
 
         public async Task<bool> AddParameterValues(IEnumerable<ParameterValue> entities)
