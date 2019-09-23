@@ -36,7 +36,7 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
         public async Task RemoveParameterByIdAsync(int id)
         {
             var parameter = await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
-            if (parameter == null)
+            if (parameter != null)
             {
                 context.Parameters.Remove(parameter);
                 await context.SaveChangesAsync();

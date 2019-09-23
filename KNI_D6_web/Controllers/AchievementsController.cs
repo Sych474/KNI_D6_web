@@ -67,7 +67,7 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Create()
         {
             ViewData["Parameters"] = await CreateParametersList(null);
-            ViewData["AchievementGroups"] = CreateAchievementGroupsList(null);
+            ViewData["AchievementGroups"] = await CreateAchievementGroupsList(null);
             ViewData["SemestersSelectList"] = await CreateSemestersSelectList(null);
 
             return View(new CreateValueAchievementViewModel());
@@ -80,7 +80,7 @@ namespace KNI_D6_web.Controllers
             [Bind("AchievementName, AhievementDescription, AchievementValue, ParameterId, NumberInGroup, GroupId, SemesterId, AchievementType")] CreateValueAchievementViewModel viewModel)
         {
             ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
-            ViewData["AchievementGroups"] = CreateAchievementGroupsList(viewModel.GroupId);
+            ViewData["AchievementGroups"] = await CreateAchievementGroupsList(viewModel.GroupId);
             ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
 
             IActionResult result = View(viewModel);
@@ -133,7 +133,7 @@ namespace KNI_D6_web.Controllers
 
             
             var viewModel = new EditAchievementViewModel(achievement);
-            ViewData["AchievementsGroupId"] = CreateAchievementGroupsList(achievement.AchievementsGroupId);
+            ViewData["AchievementsGroupId"] = await CreateAchievementGroupsList(achievement.AchievementsGroupId);
             ViewData["Parameters"] = await CreateParametersList(achievement.ParameterId);
             ViewData["SemestersSelectList"] = await CreateSemestersSelectList(achievement.SemesterId);
             return View(viewModel);            
@@ -147,7 +147,7 @@ namespace KNI_D6_web.Controllers
             if (!ModelState.IsValid)
                 return View(viewModel);
 
-            if (id == viewModel.Id)
+            if (id != viewModel.Id)
                 return BadRequest();
 
             var achievement = await achievementsRepository.FindAchievementByIdAsync(id);
@@ -161,7 +161,7 @@ namespace KNI_D6_web.Controllers
 
                 await achievementsRepository.UpdateAchievementAsync(achievement);
                 
-                ViewData["AchievementsGroupId"] = CreateAchievementGroupsList(viewModel.AchievementsGroupId);
+                ViewData["AchievementsGroupId"] = await CreateAchievementGroupsList(viewModel.AchievementsGroupId);
                 ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
                 ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
                 await achievementsManager.CheckAndUpdateСalculatedAchievementForUsers(userManager.Users.Select(u => u.Id), id);

@@ -13,34 +13,34 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
 
         public async Task<int> AddAchievementsGroupAsync(AchievementsGroup entity)
         {
-            context.AchievementsGroups.Add(entity);
+            context.AchievementGroups.Add(entity);
             await context.SaveChangesAsync();
             return entity.Id;
         }
 
         public Task<AchievementsGroup> FindAchievementsGroupByIdAsync(int id)
         {
-            return context.AchievementsGroups.FirstOrDefaultAsync(a => a.Id == id);
+            return context.AchievementGroups.FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public Task<List<AchievementsGroup>> GetAchievementsGroupsAsync()
         {
-            return context.AchievementsGroups?.Include(ag => ag.Ahievements)?.ThenInclude(a => a.Parameter)?.ToListAsync();
+            return context.AchievementGroups?.Include(ag => ag.Ahievements)?.ThenInclude(a => a.Parameter)?.ToListAsync();
         }
 
         public async Task RemoveAchievementsGroupByIdAsync(int id)
         {
-            var entity = await context.AchievementsGroups.FirstOrDefaultAsync(a => a.Id == id);
+            var entity = await context.AchievementGroups.FirstOrDefaultAsync(a => a.Id == id);
             if (entity == null)
             {
-                context.AchievementsGroups.Remove(entity);
+                context.AchievementGroups.Remove(entity);
                 await context.SaveChangesAsync();
             }
         }
 
         public async Task UpdateAchievementsGroupAsync(AchievementsGroup entity)
         {
-            context.AchievementsGroups.Update(entity);
+            context.AchievementGroups.Update(entity);
             await context.SaveChangesAsync();
         }
     }
