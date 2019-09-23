@@ -22,7 +22,7 @@ namespace KNI_D6_web.Controllers
         // GET: AchievementGroups
         public async Task<IActionResult> Index()
         {
-            return View(await dbContext.AchievementGroups.ToListAsync());
+            return View(await dbContext.AchievementsGroups.ToListAsync());
         }
 
 
@@ -53,7 +53,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var achievementGroup = await dbContext.AchievementGroups.FindAsync(id);
+            var achievementGroup = await dbContext.AchievementsGroups.FindAsync(id);
             if (achievementGroup == null)
             {
                 return NotFound();
@@ -104,7 +104,7 @@ namespace KNI_D6_web.Controllers
                 return NotFound();
             }
 
-            var achievementGroup = await dbContext.AchievementGroups
+            var achievementGroup = await dbContext.AchievementsGroups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (achievementGroup == null)
             {
@@ -119,15 +119,15 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var achievementGroup = await dbContext.AchievementGroups.FindAsync(id);
-            dbContext.AchievementGroups.Remove(achievementGroup);
+            var achievementGroup = await dbContext.AchievementsGroups.FindAsync(id);
+            dbContext.AchievementsGroups.Remove(achievementGroup);
             await dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AchievementGroupExists(int id)
         {
-            return dbContext.AchievementGroups.Any(e => e.Id == id);
+            return dbContext.AchievementsGroups.Any(e => e.Id == id);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace KNI_D6_web.Model.Database
 
         public DbSet<UserAchievement> UserAchievements { get; set; }
 
-        public DbSet<AchievementsGroup> AchievementGroups { get; set; }
+        public DbSet<AchievementsGroup> AchievementsGroups { get; set; }
 
         public DbSet<Semester> Semesters { get; set; }
 
