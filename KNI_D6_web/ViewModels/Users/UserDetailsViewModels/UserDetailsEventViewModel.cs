@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace KNI_D6_web.ViewModels.Visits
+namespace KNI_D6_web.ViewModels.Users.UserDetailsViewModels
 {
-    public class EventVisitViewModel
+    public class UserDetailsEventViewModel
     {
         public int EventId { get; set; }
 
