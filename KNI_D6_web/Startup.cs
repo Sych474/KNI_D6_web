@@ -60,6 +60,9 @@ namespace KNI_D6_web
             services.AddTransient<IParameterValuesRepository, ParameterValuesRepository>();
             services.AddTransient<IAchievementsRepository, AchievementsRepository>();
             services.AddTransient<IAchievementsGroupsRepository, AchievementsGroupsRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddTransient<IEventsRepository, EventsRepository>();
+            services.AddTransient<IUserEventsRepository, UserEventsRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
