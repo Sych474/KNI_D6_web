@@ -145,7 +145,12 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,ParameterId,SemesterId")] EditAchievementViewModel viewModel)
         {
             if (!ModelState.IsValid)
+            {
+                ViewData["AchievementsGroupId"] = await CreateAchievementGroupsList(viewModel.AchievementsGroupId);
+                ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
+                ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
                 return View(viewModel);
+            }
 
             if (id != viewModel.Id)
                 return BadRequest();
@@ -161,9 +166,6 @@ namespace KNI_D6_web.Controllers
 
                 await achievementsRepository.UpdateAchievementAsync(achievement);
                 
-                ViewData["AchievementsGroupId"] = await CreateAchievementGroupsList(viewModel.AchievementsGroupId);
-                ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
-                ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
                 await achievementsManager.CheckAndUpdateСalculatedAchievementForUsers(userManager.Users.Select(u => u.Id), id);
                 result = RedirectToAction(nameof(All));
             }
