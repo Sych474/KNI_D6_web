@@ -10,12 +10,10 @@ namespace KNI_D6_web.Controllers
     public class SemestersController : Controller
     {
         private readonly ISemestersRepository semestersRepository;
-        private readonly IParameterValuesRepository parameterValuesRepository;
 
-        public SemestersController(ISemestersRepository semestersRepository, IParameterValuesRepository parameterValuesRepository)
+        public SemestersController(ISemestersRepository semestersRepository)
         {
             this.semestersRepository = semestersRepository;
-            this.parameterValuesRepository = parameterValuesRepository;
         }
 
         public async Task<IActionResult> Index()
