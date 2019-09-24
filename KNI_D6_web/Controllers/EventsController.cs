@@ -3,36 +3,38 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using KNI_D6_web.Model;
-using KNI_D6_web.Model.Database;
 using Microsoft.AspNetCore.Authorization;
 using KNI_D6_web.ViewModels.Events;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using KNI_D6_web.Model.Database.Repositories;
-using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace KNI_D6_web.Controllers
 {
     [Authorize(Roles = UserRoles.AdminAndModerator)]
     public class EventsController : Controller
     {
-        private readonly ApplicationDbContext dbContext;
         private readonly ISemestersRepository semestersRepository;
+        private readonly IEventsRepository eventsRepository;
+        private readonly IUserEventsRepository userEventsRepository;
+        private readonly IUsersRepository usersRepository;
 
-        public EventsController(ApplicationDbContext context, ISemestersRepository semestersRepository)
+        public EventsController(ISemestersRepository semestersRepository, IEventsRepository eventsRepository, IUserEventsRepository userEventsRepository, IUsersRepository usersRepository)
         {
-            this.dbContext = context;
             this.semestersRepository = semestersRepository;
+            this.eventsRepository = eventsRepository;
+            this.userEventsRepository = userEventsRepository;
+            this.usersRepository = usersRepository;
         }
-
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var semester = await semestersRepository.FindCurrentSemesterAsync();
             var events = semester != null ?
-                await dbContext.Events.Where(e => e.SemesterId == semester.Id || e.SemesterId == null).OrderBy(x => x.Date).ToListAsync() :
-                await dbContext.Events.OrderBy(x => x.Date).ToListAsync();
+                (await eventsRepository.GetEventsAsync(semester.Id)).OrderBy(x => x.Date) :
+                (await eventsRepository.GetEventsAsync()).OrderBy(x => x.Date);
 
             var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
 
@@ -51,7 +53,7 @@ namespace KNI_D6_web.Controllers
         [HttpGet, Route("[controller]/All")]
         public async Task<IActionResult> All()
         {
-            var events = await dbContext.Events.OrderByDescending(x => x.Date).ToListAsync();
+            var events = (await eventsRepository.GetEventsAsync()).OrderByDescending(x => x.Date);
             var futureEvents = events.Where(e => e.Date > DateTime.Now.Date);
             var pastEvents = events.Except(futureEvents);
 
@@ -68,23 +70,18 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
+            var entity = await eventsRepository.FindEventByIdAsync(id.Value);
 
-            var @event = await dbContext.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@event == null)
-            {
+            if (entity == null)
                 return NotFound();
-            }
 
-            return View(@event);
+            return View(entity);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["SemestersSelectList"] = CreateSemestersSelectList(null);
+            ViewData["SemestersSelectList"] = await CreateSemestersSelectList(null);
 
             return View();
         }
@@ -93,26 +90,36 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                dbContext.Add(@event);
-                await dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["SemestersSelectList"] = await CreateSemestersSelectList(@event.SemesterId);
+                return View(@event);
             }
-            ViewData["SemestersSelectList"] = CreateSemestersSelectList(@event.SemesterId);
-            return View(@event);
+
+            IActionResult result;
+            try
+            {
+                await eventsRepository.AddEventAsync(@event);
+                result = RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+            return result;
+
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
-         
-            var entity = await dbContext.Events.FirstOrDefaultAsync(e => e.Id == id);
+
+            var entity = await eventsRepository.FindEventByIdAsync(id.Value);
             if (entity == null)
                 return NotFound();
 
-            ViewData["SemestersSelectList"] = CreateSemestersSelectList(null);
+            ViewData["SemestersSelectList"] = await CreateSemestersSelectList(null);
             return View(entity);
         }
 
@@ -120,94 +127,92 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Date,SemesterId,IsSpecial")] Event @event)
         {
-            if (id != @event.Id)
-                return NotFound();
-            
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    dbContext.Update(@event);
-                    await dbContext.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventExists(@event.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                ViewData["SemestersSelectList"] = await CreateSemestersSelectList(@event.SemesterId);
+                return View(@event);
             }
-            ViewData["SemestersSelectList"] = CreateSemestersSelectList(@event.SemesterId);
-            return View(@event);
+
+            if (id != @event.Id)
+                return BadRequest();
+
+            IActionResult result;
+            try
+            {
+                await eventsRepository.UpdateEventAsync(@event);
+                result = RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+            return result;
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var @event = await dbContext.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@event == null)
-            {
+            var entity = await eventsRepository.FindEventByIdAsync(id.Value);
+            if (entity == null)
                 return NotFound();
-            }
 
-            return View(@event);
+            return View(entity);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @event = await dbContext.Events.FindAsync(id);
-            dbContext.Events.Remove(@event);
-            await dbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            IActionResult result;
+            try
+            {
+                await eventsRepository.RemoveEventByIdAsync(id);
+                result = RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+            return result;
         }
 
         [HttpGet, Route("[controller]/EventVisitors/{id}")]
         public async Task<IActionResult> EventVisitors(int id)
         {
-            IActionResult result = NotFound();
-            if (await dbContext.Events.AnyAsync(e => e.Id == id))
+            var entity = await eventsRepository.FindEventByIdAsync(id);
+            if (entity == null)
+                return NotFound();
+
+            var viewModel = new EventVisitorsViewModel()
             {
-                var viewModel = new EventVisitorsViewModel()
+                EventId = id,
+                EventVisitors = (await usersRepository.GetUsersWithLinksAsync()).Select(u => new EventVisitorViewModel()
                 {
-                    EventId = id,
-                    EventVisitors = dbContext.Users.Include(u => u.UserEvents).Select(u => new EventVisitorViewModel()
-                    {
-                        Login = u.UserName,
-                        UserId = u.Id,
-                        IsVisited = u.UserEvents.Any(ue => ue.EventId == id)
-                    })
-                };
-                result = View(viewModel);
-            }
-            return result;
+                    Login = u.UserName,
+                    UserId = u.Id,
+                    IsVisited = u.UserEvents.Any(ue => ue.EventId == id)
+                })
+            };
+            return View(viewModel);
         }
         
         [Route("[controller]/RemoveUserEvent")]
         public async Task<IActionResult> RemoveUserEvent(string userId, int eventId)
         {
-            IActionResult result = NotFound();
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            IActionResult result;
+            try
             {
-                var userEvent = await dbContext.UserEvents.FirstOrDefaultAsync(ue => ue.UserId == userId && ue.EventId == eventId);
-                if (userEvent != null)
-                {
-                    dbContext.UserEvents.Remove(userEvent);
-                    await dbContext.SaveChangesAsync();
-                    result = RedirectToAction(nameof(EventVisitors), new { id = eventId });
-                }
+                await userEventsRepository.RemoveUserEventAsync(userId, eventId);
+                result = RedirectToAction(nameof(EventVisitors), new { id = eventId });
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
             return result;
         }
@@ -215,28 +220,29 @@ namespace KNI_D6_web.Controllers
         [Route("[controller]/AddUserEvent")]
         public async Task<IActionResult> AddUserEvent(string userId, int eventId)
         {
-            IActionResult result = NotFound();
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            var userEvent = await userEventsRepository.FindUserEventAsync(userId, eventId);
+            if (userEvent != null)
+                return BadRequest();
+
+            IActionResult result;
+            try
             {
-                var userEvent = await dbContext.UserEvents.FirstOrDefaultAsync(ue => ue.UserId == userId && ue.EventId == eventId);
-                if (userEvent == null)
-                {
-                    dbContext.UserEvents.Add(new UserEvent() { UserId = userId, EventId = eventId});
-                    await dbContext.SaveChangesAsync();
-                    result = RedirectToAction(nameof(EventVisitors), new { id = eventId });
-                }
+                await userEventsRepository.AddUserEventAsync(new UserEvent() { UserId = userId, EventId = eventId });
+                result = RedirectToAction(nameof(EventVisitors), new { id = eventId });
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
             return result;
         }
 
-        private bool EventExists(int id)
+        private async Task<SelectList> CreateSemestersSelectList(int? currentId)
         {
-            return dbContext.Events.Any(e => e.Id == id);
-        }
-
-        private SelectList CreateSemestersSelectList(int? currentId)
-        {
-            var tmpList = dbContext.Semesters.Select(s => new CustomSelectListItem() { Name = s.Name, Id = s.Id }).ToList();
+            var tmpList = (await semestersRepository.GetSemestersAsync()).Select(s => new CustomSelectListItem() { Name = s.Name, Id = s.Id }).ToList();
             tmpList.Insert(0, new CustomSelectListItem() { Name = "Без семестра", Id = null });
             return new SelectList(tmpList, "Id", "Name", currentId);
         }
