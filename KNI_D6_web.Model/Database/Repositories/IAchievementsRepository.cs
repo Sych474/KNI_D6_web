@@ -1,7 +1,5 @@
 ﻿using KNI_D6_web.Model.Achievements;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace KNI_D6_web.Model.Database.Repositories
@@ -17,6 +15,5 @@ namespace KNI_D6_web.Model.Database.Repositories
         Task RemoveAchievementByIdAsync(int id);
 
         Task<List<Achievement>> GetAchievementsAsync();
-
     }
 }
