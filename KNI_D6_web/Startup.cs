@@ -58,6 +58,12 @@ namespace KNI_D6_web
             services.AddTransient<ISemestersRepository, SemestersRepository>();
             services.AddTransient<IParametersRepository, ParametersRepository>();
             services.AddTransient<IParameterValuesRepository, ParameterValuesRepository>();
+            services.AddTransient<IAchievementsRepository, AchievementsRepository>();
+            services.AddTransient<IUserAchievementsRepository, UserAchievementsRepository>();
+            services.AddTransient<IAchievementsGroupsRepository, AchievementsGroupsRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddTransient<IEventsRepository, EventsRepository>();
+            services.AddTransient<IUserEventsRepository, UserEventsRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

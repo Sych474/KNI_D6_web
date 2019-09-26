@@ -1,4 +1,4 @@
-﻿namespace KNI_D6_web.ViewModels.Visits
+﻿namespace KNI_D6_web.ViewModels.Users.UserDetailsViewModels
 {
     public enum EventVisitState
     {

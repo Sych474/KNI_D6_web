@@ -1,6 +1,7 @@
-﻿using KNI_D6_web.Model.Database;
+﻿using KNI_D6_web.Model;
 using KNI_D6_web.Model.Database.Repositories;
 using KNI_D6_web.ViewModels.Components.AchievementsProgress;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -11,13 +12,15 @@ namespace KNI_D6_web.Components
 {
     public class AchievementsProgressViewComponent : ViewComponent
     {
-        private readonly ApplicationDbContext dbContext;
         private readonly ISemestersRepository semestersRepository;
+        private readonly IAchievementsGroupsRepository achievementsGroupsRepository;
+        private readonly UserManager<User> userManager;
 
-        public AchievementsProgressViewComponent(ApplicationDbContext dbContext, ISemestersRepository semestersRepository)
+        public AchievementsProgressViewComponent(ISemestersRepository semestersRepository, IAchievementsGroupsRepository achievementsGroupsRepository, UserManager<User> userManager)
         {
-            this.dbContext = dbContext;
             this.semestersRepository = semestersRepository;
+            this.achievementsGroupsRepository = achievementsGroupsRepository;
+            this.userManager = userManager;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(string login)
@@ -31,15 +34,12 @@ namespace KNI_D6_web.Components
 
         private async Task<IEnumerable<IOrderedEnumerable<AchievementProgressViewModel>>> GetAchievementsProgressInGroups(string login)
         {
-            var user = await dbContext.Users
+            var user = await userManager.Users
                 .Include(u => u.ParameterValues)
                 .Include(u => u.UserAchievements)
                 .FirstOrDefaultAsync(u => u.UserName == login);
 
-            var groups = await dbContext?.AchievementGroups?
-                .Include(ag => ag.Ahievements)?
-                .ThenInclude(ap => ap.Parameter)?
-                .ToListAsync();
+            var groups = await achievementsGroupsRepository.GetAchievementsGroupsAsync();
 
             var semester = await semestersRepository.FindCurrentSemesterAsync();
 

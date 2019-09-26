@@ -6,7 +6,7 @@ namespace KNI_D6_web.Model.Database.Repositories
 {
     public interface IParametersRepository 
     {
-        Task<Parameter> AddParameterAsync(Parameter entity);
+        Task<int> AddParameterAsync(Parameter entity);
 
         Task<Parameter> FindParameterByNameAsync(string name);
 

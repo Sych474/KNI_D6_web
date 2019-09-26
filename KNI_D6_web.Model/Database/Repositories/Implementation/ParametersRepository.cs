@@ -11,21 +11,21 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
         {
         }
 
-        public async Task<Parameter> AddParameterAsync(Parameter entity)
+        public async Task<int> AddParameterAsync(Parameter entity)
         {
             context.Parameters.Add(entity);
             await context.SaveChangesAsync();
-            return entity;    
+            return entity.Id;    
         }
 
-        public async Task<Parameter> FindParameterByIdAsync(int id)
+        public Task<Parameter> FindParameterByIdAsync(int id)
         {
-            return await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
+            return context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Parameter> FindParameterByNameAsync(string name)
+        public Task<Parameter> FindParameterByNameAsync(string name)
         {
-            return await context.Parameters.FirstOrDefaultAsync(p => p.Name == name);
+            return context.Parameters.FirstOrDefaultAsync(p => p.Name == name);
         }
 
         public Task<List<Parameter>> GetParametersAsync()
@@ -36,7 +36,7 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
         public async Task RemoveParameterByIdAsync(int id)
         {
             var parameter = await context.Parameters.FirstOrDefaultAsync(p => p.Id == id);
-            if (parameter == null)
+            if (parameter != null)
             {
                 context.Parameters.Remove(parameter);
                 await context.SaveChangesAsync();
