@@ -12,7 +12,7 @@ namespace KNI_D6_web.ViewModels.Account
         public string Login { get; set; }
 
         [Required(ErrorMessage = "Поле Пароль должно быть заполнено")]
-        [StringLength(100, ErrorMessage = "Пароль должен иметь не менее 5 символов", MinimumLength = 5)]
+        [StringLength(DefaultAuthorizetionSettings.PasswordMaxLength, ErrorMessage = DefaultAuthorizetionSettings.PasswordErrorMessage, MinimumLength = DefaultAuthorizetionSettings.PasswordMinLength)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

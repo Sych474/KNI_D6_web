@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
 using KNI_D6_web.Model.Achievements;
-using KNI_D6_web.Model.Database;
+using KNI_D6_web.Model.Database.Repositories;
+using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using KNI_D6_web.ViewModels.Users;
-using KNI_D6_web.ViewModels.Visits;
+using KNI_D6_web.ViewModels.Users.UserDetailsViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,26 +20,27 @@ namespace KNI_D6_web.Controllers
     [Route("[controller]")]
     public class UsersController : Controller
     {
-        private readonly ApplicationDbContext dbContext;
         private readonly UserManager<User> userManager;
-        private readonly IAchievementsManager achievementsManager;
+        private readonly IUsersRepository usersRepository;
+        private readonly IAchievementsRepository achievementsRepository;
+        private readonly IUserAchievementsRepository userAchievementsRepository;
+        private readonly IEventsRepository eventsRepository;
 
-        public UsersController(ApplicationDbContext dbContext, UserManager<User> userManager, IAchievementsManager achievementsManager)
+        public UsersController(UserManager<User> userManager, IUsersRepository usersRepository, IAchievementsRepository achievementsRepository, IUserAchievementsRepository userAchievementsRepository, IEventsRepository eventsRepository)
         {
-            this.dbContext = dbContext;
             this.userManager = userManager;
-            this.achievementsManager = achievementsManager;
+            this.usersRepository = usersRepository;
+            this.achievementsRepository = achievementsRepository;
+            this.userAchievementsRepository = userAchievementsRepository;
+            this.eventsRepository = eventsRepository;
         }
 
         public async Task<IActionResult> Index()
         {
             var viewModel = new UsersViewModel()
             {
-                Users = await dbContext.Users
-                    .Include(u => u.UserEvents).ThenInclude(ue => ue.Event)
-                    .Include(u => u.UserAchievements)
+                Users = (await usersRepository.GetUsersWithLinksAsync())
                     .OrderByDescending(u => u.UserAchievements.Count())
-                    .ToListAsync()
             };
 
             return View(viewModel);
@@ -46,68 +49,71 @@ namespace KNI_D6_web.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UserDetails(string id)
         {
-            IActionResult result = BadRequest(id);
-            var user = await dbContext.Users
-                .Include(x => x.ParameterValues).ThenInclude(pv => pv.Parameter)
-                .Include(x => x.UserAchievements).ThenInclude(pv => pv.Achievement)
-                .Include(x => x.UserEvents).ThenInclude(pv => pv.Event)
-                .Where(u => u.Id == id).FirstOrDefaultAsync();
+            var user = await usersRepository.FindFullUserByIdAsync(id);
+            if (user == null)
+                return NotFound(id);
 
-            if (user != null)
+            var viewModel = new UserDetailsViewModel()
             {
-                var evnts = await dbContext.Events.ToListAsync();
-                result = View(new UserDetailsViewModel()
-                {
-                    User = user,
-                    EventVisits = CreateEventVisitViewModelsForUser(evnts, user).OrderBy(x => x.Date)
-                });
-            }
+                UserId = id,
+                UserName = user.UserName,
+                Position = user.Position,
+                Parameters = CreateUserDetailsParameterViewModels(user.ParameterValues),
+                Achievements = CreateUserDetailsAchievementViewModels(user.UserAchievements),
+                Events = await CreateUserDetailsEventViewModels(user.UserEvents)
+            };
 
-            return result;
+            return View(viewModel);
         }
 
         [HttpGet("UserDetails/{login}")]
         public async Task<IActionResult> UserDetailsByLogin(string login)
         {
-            IActionResult result = BadRequest(login);
+            if (string.IsNullOrWhiteSpace(login))
+                return BadRequest();
 
-            var _user = await dbContext.Users.Where(u => u.UserName == login).FirstOrDefaultAsync();
-            if (_user != null)
-                result = RedirectToAction("UserDetails", "Users", new { id = _user.Id });
+            var user = await userManager.FindByNameAsync(login);
+            if (user == null)
+                return NotFound(login);
 
-            return result;
+            return RedirectToAction("UserDetails", "Users", new { id = user.Id });
         }
 
         [HttpGet("Admins")]
         public async Task<IActionResult> Admins()
         {
-            var admins = await dbContext.Users.Where(u => u.Position == UserPosition.Admin || u.Position == UserPosition.Secretary || u.Position == UserPosition.Chairman).ToListAsync();
+            var secretary = (await usersRepository.GetUsersByPositionAsync(UserPosition.Secretary)).FirstOrDefault();
+            var chairman = (await usersRepository.GetUsersByPositionAsync(UserPosition.Chairman)).FirstOrDefault();
+            var admins = await usersRepository.GetUsersByPositionAsync(UserPosition.Admin);
 
-            return View(new AdminsViewModel() { Admins = admins });
+            var fullList = new List<User>(admins);
+            if (secretary != null)
+                fullList.Insert(0, secretary);
+            if (chairman != null)
+                fullList.Insert(0, chairman);
+
+            return View(new AdminsViewModel() { Admins = fullList });
         }
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(string id)
         {
-            IActionResult result = NotFound();
-            if (!string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(id);
+
+            var viewModel = new EditUserViewModel()
             {
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-                if (user != null)
-                {
-                    var userMaximumRole = UserRoles.GetMaximumRole(await userManager.GetRolesAsync(user));
-                    var viewModel = new EditUserViewModel()
-                    {
-                        Login = user.UserName,
-                        UserId = user.Id,
-                        UserPosition = user.Position,
-                        UserRole = userMaximumRole
-                    };
-                    result = View(viewModel);
-                }
-            }
-            return result;
+                Login = user.UserName,
+                UserId = user.Id,
+                UserPosition = user.Position,
+                UserRole = UserRoles.GetMaximumRole(await userManager.GetRolesAsync(user))
+            };
+            return View(viewModel);
         }
 
 
@@ -116,23 +122,26 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("UserId,UserRole,UserPosition,Login")] EditUserViewModel viewModel)
         {
-            IActionResult result = NotFound();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
+            if (id != viewModel.UserId)
+                return BadRequest();
+
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(id);
+
+            IActionResult result;
+            try
             {
-                if (id == viewModel.UserId)
-                {
-                    var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-                    if (user != null)
-                    {
-                        await UpdateUser(user, viewModel);
-
-                        dbContext.Users.Update(user);
-
-                        await dbContext.SaveChangesAsync();
-
-                        result = RedirectToAction(nameof(Index));
-                    }
-                }
+                await UpdateUser(user, viewModel);
+                await usersRepository.UpdateUserAsync(user);
+                result = RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
             return result;
         }
@@ -141,30 +150,38 @@ namespace KNI_D6_web.Controllers
         [HttpGet("ManageAchievements/{userId}")]
         public async Task<IActionResult> ManageAchievements(string userId)
         {
-            IActionResult result = NotFound(userId);
-            var user = await dbContext.Users.Include(u => u.UserAchievements).FirstOrDefaultAsync(u => u.Id == userId);
-            if (user != null)
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            var user = await usersRepository.FindUserWithAchievementsByIdAsync(userId);
+            if (user == null)
+                return NotFound(userId);
+
+            var viewModel = new ManageAchievementsViewModel()
             {
-                var viewModel = new ManageAchievementsViewModel()
-                {
-                    Login = user.UserName,
-                    UserId = userId,
-                    Achievements = CreateAchievementsViewModel(user)
-                };
-                result = View(viewModel);
-            }
-            return result;
+                Login = user.UserName,
+                UserId = userId,
+                Achievements = await CreateAchievementsViewModel(user)
+            };
+            return View(viewModel);
         }
 
         [Authorize(Roles = UserRoles.AdminAndModerator)]
         [HttpGet("{userId}/RemoveAchievement/{achievementId}")]
         public async Task<IActionResult> RemoveAchievement(string userId, int achievementId)
         {
-            IActionResult result = NotFound();
-            if (userId != null)
+            if (userId == null)
+                return NotFound();
+
+            IActionResult result;
+            try
             {
-                if (await achievementsManager.RemoveUserAchievement(achievementId, userId))
-                    result = RedirectToAction(nameof(ManageAchievements), new { userId = userId });
+                await userAchievementsRepository.RemoveUserAchievementAsync(achievementId, userId);
+                result = RedirectToAction(nameof(ManageAchievements), new { userId });
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
             return result;
         }
@@ -173,11 +190,18 @@ namespace KNI_D6_web.Controllers
         [HttpGet("{userId}/AddAchievement/{achievementId}")]
         public async Task<IActionResult> AddAchievement(string userId, int achievementId)
         {
-            IActionResult result = NotFound();
-            if (userId != null)
+            if (userId == null)
+                return NotFound();
+
+            IActionResult result;
+            try
             {
-                if (await achievementsManager.AddAchievementToUser(achievementId, userId))
-                    result = RedirectToAction(nameof(ManageAchievements), new { userId = userId });
+                await userAchievementsRepository.AddUserAchievementAsync(achievementId, userId);
+                result = RedirectToAction(nameof(ManageAchievements), new { userId });
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
             return result;
         }
@@ -186,14 +210,14 @@ namespace KNI_D6_web.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
-            IActionResult result = NotFound();
-            if (id != null)
-            {
-                var user = await dbContext.Users.FirstOrDefaultAsync(m => m.Id == id);
-                if (user != null)
-                    result = View(new DeleteUserViewModel() { Id = user.Id, Login = user.UserName });
-            }
-            return result;
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(id);
+
+            return View(new DeleteUserViewModel() { Id = user.Id, Login = user.UserName });
         }
 
         [Authorize(Roles = UserRoles.Admin)]
@@ -201,8 +225,10 @@ namespace KNI_D6_web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-            await userManager.DeleteAsync(user);   
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+                await userManager.DeleteAsync(user);  
+            
             return RedirectToAction(nameof(Index));
         }
 
@@ -218,15 +244,16 @@ namespace KNI_D6_web.Controllers
             user.Position = viewModel.UserPosition;
         }
 
-        private IEnumerable<EventVisitViewModel> CreateEventVisitViewModelsForUser(IEnumerable<Event> events, User user)
+        private async Task<IEnumerable<UserDetailsEventViewModel>> CreateUserDetailsEventViewModels(IEnumerable<UserEvent> userEvents)
         {
-            var result = new List<EventVisitViewModel>(events.Count());
+            var events = await eventsRepository.GetEventsAsync();
+            var result = new List<UserDetailsEventViewModel>(events.Count());
 
-            var visitedEventIds = user.UserEvents.Select(x => x.EventId);
+            var visitedEventIds = userEvents.Select(x => x.EventId);
 
             foreach (var item in events)
             {
-                result.Add(new EventVisitViewModel()
+                result.Add(new UserDetailsEventViewModel()
                 {
                     Date = item.Date,
                     EventId = item.Id,
@@ -238,15 +265,35 @@ namespace KNI_D6_web.Controllers
             return result;
         }
 
-        private IEnumerable<AchievementProgressViewModel> CreateAchievementsViewModel(User user)
+        private async Task<IEnumerable<AchievementProgressViewModel>> CreateAchievementsViewModel(User user)
         {
-            return dbContext.Achievements.Select(a => new AchievementProgressViewModel()
+            var achievements = await achievementsRepository.GetAchievementsAsync();
+            return achievements.Select(a => new AchievementProgressViewModel()
             {
                 AchievementId = a.Id,
                 AchievementName = a.Name,
                 AchievementType = a.AchievementType,
                 IsReceived = user.UserAchievements.Any(ua => ua.AchievementId == a.Id)
             });
+        }
+
+        private IEnumerable<UserDetailsAchievementViewModel> CreateUserDetailsAchievementViewModels(IEnumerable<UserAchievement> userAchievements)
+        {
+            return userAchievements.Select(ua => new UserDetailsAchievementViewModel()
+            {
+                Name = ua.Achievement.Name,
+                Description = ua.Achievement.Description
+            }).OrderBy(vm => vm.Name);
+        }
+
+        private IEnumerable<UserDetailsParameterViewModel> CreateUserDetailsParameterViewModels(IEnumerable<ParameterValue> parameterValues)
+        {
+            return parameterValues.Select(pv => new UserDetailsParameterViewModel()
+            {
+                Id = pv.ParameterId,
+                Value = pv.Value,
+                Name = pv.Parameter.Name
+            }).OrderBy(vm => vm.Name);
         }
 
         private EventVisitState GetEventVisitState(Event item, IEnumerable<int> visitedEventIds)
