@@ -21,17 +21,17 @@ namespace KNI_D6_web.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<User> userManager;
-        private readonly IAchievementsManager achievementsManager;
         private readonly IUsersRepository usersRepository;
         private readonly IAchievementsRepository achievementsRepository;
+        private readonly IUserAchievementsRepository userAchievementsRepository;
         private readonly IEventsRepository eventsRepository;
 
-        public UsersController(UserManager<User> userManager, IAchievementsManager achievementsManager, IUsersRepository usersRepository, IAchievementsRepository achievementsRepository, IEventsRepository eventsRepository)
+        public UsersController(UserManager<User> userManager, IUsersRepository usersRepository, IAchievementsRepository achievementsRepository, IUserAchievementsRepository userAchievementsRepository, IEventsRepository eventsRepository)
         {
             this.userManager = userManager;
-            this.achievementsManager = achievementsManager;
             this.usersRepository = usersRepository;
             this.achievementsRepository = achievementsRepository;
+            this.userAchievementsRepository = userAchievementsRepository;
             this.eventsRepository = eventsRepository;
         }
 
@@ -87,8 +87,10 @@ namespace KNI_D6_web.Controllers
             var admins = await usersRepository.GetUsersByPositionAsync(UserPosition.Admin);
 
             var fullList = new List<User>(admins);
-            fullList.Insert(0, secretary);
-            fullList.Insert(0, chairman);
+            if (secretary != null)
+                fullList.Insert(0, secretary);
+            if (chairman != null)
+                fullList.Insert(0, chairman);
 
             return View(new AdminsViewModel() { Admins = fullList });
         }
@@ -174,7 +176,7 @@ namespace KNI_D6_web.Controllers
             IActionResult result;
             try
             {
-                await achievementsManager.RemoveUserAchievement(achievementId, userId);
+                await userAchievementsRepository.RemoveUserAchievementAsync(achievementId, userId);
                 result = RedirectToAction(nameof(ManageAchievements), new { userId });
             }
             catch (Exception ex)
@@ -194,7 +196,7 @@ namespace KNI_D6_web.Controllers
             IActionResult result;
             try
             {
-                await achievementsManager.AddAchievementToUser(achievementId, userId);
+                await userAchievementsRepository.AddUserAchievementAsync(achievementId, userId);
                 result = RedirectToAction(nameof(ManageAchievements), new { userId });
             }
             catch (Exception ex)

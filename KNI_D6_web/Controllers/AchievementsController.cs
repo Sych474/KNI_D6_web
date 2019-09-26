@@ -79,30 +79,38 @@ namespace KNI_D6_web.Controllers
         public async Task<IActionResult> Create(
             [Bind("AchievementName, AhievementDescription, AchievementValue, ParameterId, NumberInGroup, GroupId, SemesterId, AchievementType")] CreateValueAchievementViewModel viewModel)
         {
-            ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
-            ViewData["AchievementGroups"] = await CreateAchievementGroupsList(viewModel.GroupId);
-            ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
 
-            IActionResult result = View(viewModel);
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var id = await achievementsManager.AddAchievement(new Achievement()
-                {
-                    Name = viewModel.AchievementName, 
-                    Description = viewModel.AhievementDescription, 
-                    AchievementValue = viewModel.AchievementValue, 
-                    ParameterId = viewModel.ParameterId,
-                    AchievementsGroupId = viewModel.GroupId,
-                    NumberInGroup = viewModel.NumberInGroup,
-                    SemesterId = viewModel.SemesterId,
-                    AchievementType = viewModel.AchievementType
-                });
-                if (id.HasValue)
-                {
-                    await achievementsManager.CheckAndUpdateСalculatedAchievementForUsers(userManager.Users.Select(u => u.Id), id.Value);
-                    result = RedirectToAction(nameof(All));
-                }
+                ViewData["Parameters"] = await CreateParametersList(viewModel.ParameterId);
+                ViewData["AchievementGroups"] = await CreateAchievementGroupsList(viewModel.GroupId);
+                ViewData["SemestersSelectList"] = await CreateSemestersSelectList(viewModel.SemesterId);
+                return View(viewModel);
             }
+
+            var achievement = new Achievement()
+            {
+                Name = viewModel.AchievementName,
+                Description = viewModel.AhievementDescription,
+                AchievementValue = viewModel.AchievementValue,
+                ParameterId = viewModel.ParameterId,
+                AchievementsGroupId = viewModel.GroupId,
+                NumberInGroup = viewModel.NumberInGroup,
+                SemesterId = viewModel.SemesterId,
+                AchievementType = viewModel.AchievementType
+            };
+
+            IActionResult result;
+            try
+            {
+                int id = await achievementsRepository.AddAchievementAsync(achievement);
+                await achievementsManager.CheckAndUpdateСalculatedAchievementForUsers(userManager.Users.Select(u => u.Id), id);
+                result = RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                result = StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }            
             return result;
         }
 
@@ -142,7 +150,8 @@ namespace KNI_D6_web.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost, Route("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,ParameterId,SemesterId")] EditAchievementViewModel viewModel)
+        public async Task<IActionResult> Edit(int id, 
+            [Bind("Id,AchievementsGroupId,NumberInGroup,Name,Description,AchievementType,AchievementValue,ParameterId,SemesterId")] EditAchievementViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -159,7 +168,7 @@ namespace KNI_D6_web.Controllers
             if (achievement == null)
                 return NotFound($"Achievement with Id {id} not found");
 
-            IActionResult result = NotFound();
+            IActionResult result;
             try
             {        
                 viewModel.UpdateAchievement(achievement);
