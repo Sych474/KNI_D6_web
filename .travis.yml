@@ -9,13 +9,13 @@ jobs:
       script:  
       - dotnet build ./ -c Release
     - stage: build docker
-      if: (branch = master OR branch=feature/56-add-backups)
+      if: (branch = master)
       dist: trusty
       script: 
       - sudo bash ./scripts/build_docker.sh
 
     - stage: deploy
-      if: (branch = master OR branch=feature/56-add-backups)
+      if: (branch = master)
       dist: trusty
       script:
       - sudo apt-get install sshpass
