@@ -6,19 +6,19 @@ services:
       ports:
         - "80:80"
       depends_on:
-        - postgres
+        - db
       networks:
         - net
       environment:
         - ASPNETCORE_ENVIRONMENT=Development
         
-    postgres:
+    db:
       image: postgres
       restart: always
       ports:
         - "5432:5432"
       volumes: 
-        - postgres_data:/var/lib/postgresql/data
+        - ~/kni_d6/pgdata:/var/lib/postgresql/data
       networks:
         - net
       environment:
@@ -31,10 +31,10 @@ services:
       restart: always
       volumes:
         - ~/kni_d6/pgbackups:/backups
-      links:
-        - postgres
       depends_on:
-        - postgres
+        - db
+      networks:
+        - net
       environment:
         - POSTGRES_HOST=postgres
         - POSTGRES_DB=kni_d6
@@ -49,5 +49,3 @@ services:
 
 networks:
   net:
-volumes:
-  postgres_data:
