@@ -36,7 +36,7 @@ services:
       networks:
         - net
       environment:
-        - POSTGRES_HOST=postgres
+        - POSTGRES_HOST=db
         - POSTGRES_DB=kni_d6
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres  
