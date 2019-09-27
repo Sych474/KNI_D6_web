@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KNI_D6_web.ViewModels.Achievements
 {
-    public class CreateValueAchievementViewModel
+    public class CreateAchievementViewModel
     {
         public string AchievementName { get; set; }
 
@@ -11,7 +11,7 @@ namespace KNI_D6_web.ViewModels.Achievements
 
         public int AchievementValue { get; set; }
 
-        public int ParameterId { get; set; }
+        public int? ParameterId { get; set; }
 
         public int GroupId { get; set; }
 

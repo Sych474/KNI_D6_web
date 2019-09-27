@@ -75,7 +75,7 @@ namespace KNI_D6_web.Controllers
             IActionResult result;
             try
             {
-                await achievementsGroupsRepository.AddAchievementsGroupAsync(achievementGroup);
+                await achievementsGroupsRepository.UpdateAchievementsGroupAsync(achievementGroup);
                 result = RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
