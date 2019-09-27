@@ -31,7 +31,7 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
         public async Task RemoveAchievementsGroupByIdAsync(int id)
         {
             var entity = await context.AchievementGroups.FirstOrDefaultAsync(a => a.Id == id);
-            if (entity == null)
+            if (entity != null)
             {
                 context.AchievementGroups.Remove(entity);
                 await context.SaveChangesAsync();

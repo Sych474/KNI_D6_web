@@ -70,14 +70,14 @@ namespace KNI_D6_web.Controllers
             ViewData["AchievementGroups"] = await CreateAchievementGroupsList(null);
             ViewData["SemestersSelectList"] = await CreateSemestersSelectList(null);
 
-            return View(new CreateValueAchievementViewModel());
+            return View(new CreateAchievementViewModel());
         }
 
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost, Route("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("AchievementName, AhievementDescription, AchievementValue, ParameterId, NumberInGroup, GroupId, SemesterId, AchievementType")] CreateValueAchievementViewModel viewModel)
+            [Bind("AchievementName, AhievementDescription, AchievementValue, ParameterId, NumberInGroup, GroupId, SemesterId, AchievementType")] CreateAchievementViewModel viewModel)
         {
 
             if (!ModelState.IsValid)
