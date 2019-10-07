@@ -1,2 +1,4 @@
 # KNI_D6_web
-Project for BMSTU board-gaming club. 
+Веб-приложение клуба настольных игр "Шестигранник". 
+
+Адрес: http://kni6d.ru/
