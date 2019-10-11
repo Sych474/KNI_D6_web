@@ -13,10 +13,8 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         
     db:
-      image: postgres
+      image: postgres:11
       restart: always
-      ports:
-        - "5432:5432"
       volumes: 
         - ~/kni_d6/pgdata:/var/lib/postgresql/data
       networks:
