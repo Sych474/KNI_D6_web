@@ -4,7 +4,7 @@
 
 <div class="text-center">
     <h3 class="display-4">
-        Добро пожаловать @(User.Identity.IsAuthenticated ? $"{@User.Identity.Name}!" : "незнакомец!")
+        Добро пожаловать, @(User.Identity.IsAuthenticated ? $"{@User.Identity.Name}!" : "незнакомец!")
     </h3>
 </div>
 <div>
