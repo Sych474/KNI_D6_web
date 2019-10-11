@@ -13,18 +13,16 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         
     db:
-      image: postgres
+      image: postgres:11
       restart: always
-      ports:
-        - "5432:5432"
       volumes: 
         - ~/kni_d6/pgdata:/var/lib/postgresql/data
       networks:
         - net
       environment:
         - POSTGRES_DB=kni_d6
-        - POSTGRES_USER=kni
-        - POSTGRES_PASSWORD=Pa$$w0rd_kni
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
         
     pgbackups:
       image: prodrigestivill/postgres-backup-local
@@ -38,8 +36,8 @@ services:
       environment:
         - POSTGRES_HOST=db
         - POSTGRES_DB=kni_d6
-        - POSTGRES_USER=kni
-        - POSTGRES_PASSWORD=Pa$$w0rd_kni  
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres  
         - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
         - SCHEDULE=@daily
         - BACKUP_KEEP_DAYS=7
