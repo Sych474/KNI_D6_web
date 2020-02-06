@@ -185,15 +185,18 @@ namespace KNI_D6_web.Controllers
             if (entity == null)
                 return NotFound();
 
+            var visitors = (await usersRepository.GetUsersWithLinksAsync()).Select(u => new EventVisitorViewModel()
+            {
+                Login = u.UserName,
+                UserId = u.Id,
+                IsVisited = u.UserEvents.Any(ue => ue.EventId == id)
+            }).ToList();
+            visitors.Sort((x, y) => string.Compare(x.Login, y.Login));
+
             var viewModel = new EventVisitorsViewModel()
             {
                 EventId = id,
-                EventVisitors = (await usersRepository.GetUsersWithLinksAsync()).Select(u => new EventVisitorViewModel()
-                {
-                    Login = u.UserName,
-                    UserId = u.Id,
-                    IsVisited = u.UserEvents.Any(ue => ue.EventId == id)
-                })
+                EventVisitors = visitors
             };
             return View(viewModel);
         }
@@ -246,6 +249,5 @@ namespace KNI_D6_web.Controllers
             tmpList.Insert(0, new CustomSelectListItem() { Name = "Без семестра", Id = null });
             return new SelectList(tmpList, "Id", "Name", currentId);
         }
-
     }
 }

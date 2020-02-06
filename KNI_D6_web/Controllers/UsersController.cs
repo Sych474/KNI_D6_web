@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
-using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database.Repositories;
 using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Components.AchievementsProgress;
@@ -262,6 +261,7 @@ namespace KNI_D6_web.Controllers
                 });
             }
 
+            result.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
             return result;
         }
 
