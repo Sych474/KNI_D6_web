@@ -46,6 +46,7 @@ namespace KNI_D6_web.Controllers
             return View(viewModel);                
         }
 
+        [AllowAnonymous]
         [HttpGet, Route("Progress")]
         public IActionResult Progress(string userLogin)
         {
