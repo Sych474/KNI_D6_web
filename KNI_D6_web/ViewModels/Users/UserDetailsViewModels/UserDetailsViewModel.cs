@@ -13,7 +13,9 @@ namespace KNI_D6_web.ViewModels.Users.UserDetailsViewModels
 
         public IEnumerable<UserDetailsParameterViewModel> Parameters { get; set; }
 
-        public IEnumerable<UserDetailsEventViewModel> Events { get; set; }
+        public IEnumerable<UserDetailsEventViewModel> CurrentEvents { get; set; }
+
+        public IEnumerable<UserDetailsEventViewModel> OldEvents { get; set; }
 
         public IEnumerable<UserDetailsAchievementViewModel> Achievements { get; set; }
     }
