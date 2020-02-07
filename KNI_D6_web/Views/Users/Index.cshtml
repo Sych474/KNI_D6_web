@@ -1,4 +1,4 @@
-﻿@model KNI_D6_web.ViewModels.Users.UsersViewModel
+﻿@model KNI_D6_web.ViewModels.Users.IndexViewModels.UsersViewModel
 @using KNI_D6_web.Model;
 @{
     ViewData["Title"] = "Наши игроки";
@@ -11,8 +11,8 @@
         <thead>
             <tr>
                 <th>Имя</th>
-                <th>Число посещений</th>
                 <th>Число достижений</th>
+                <th>Число посещений</th>
                 <th>Статус в клубе</th>
                 <th>Действия</th>
             </tr>
@@ -21,10 +21,10 @@
             @foreach (var user in Model.Users)
             {
             <tr>
-                <td>@user.UserName</td>
-                <td>@user.UserEvents.Count()</td>
-                <td>@user.UserAchievements.Count()</td>
-                <th>@user.Position.GetDescription()</th>
+                <td>@user.Name</td>
+                <td>@user.AchievementsCount</td>
+                <td>@user.EventsCount</td>
+                <th>@user.Position</th>
                 <td>
                     <a class="btn btn-success ml-1" asp-controller="Users" asp-action="UserDetails" asp-route-id="@user.Id"> Подробнее </a>
                     @if (User.IsInRole(UserRoles.Admin))
