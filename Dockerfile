@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:sdk AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 
 COPY KNI_D6_web.sln ./
@@ -10,7 +10,7 @@ COPY . ./
 WORKDIR /app/KNI_D6_web
 RUN dotnet publish -c Release -o out
 
-FROM microsoft/dotnet:2.2-aspnetcore-runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build-env /app/KNI_D6_web/out ./
 ENTRYPOINT ["dotnet", "KNI_D6_web.dll"]
