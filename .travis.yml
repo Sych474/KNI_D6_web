@@ -5,9 +5,13 @@ jobs:
     - stage: test build 
       language: csharp
       mono: none
+      dist: xenial
       dotnet: 3.1
+      install:
+      - dotnet restore
       script:  
-      - dotnet build ./ -c Release
+      - dotnet build
+
     - stage: build docker
       if: (branch = master)
       dist: trusty
