@@ -98,15 +98,15 @@
 </div>
 
 <div>
-    <h2>Посещения</h2>
+    <h2>Текущие Посещения</h2>
     <div class="pt-2">
         @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
         {
-            @if (Model.Events.Any())
+            @if (Model.CurrentEvents.Any())
             {
                 <div class="container rounded rounded-lg mt-2 ">
                     <ul class="list-unstyled">
-                        @foreach (var item in Model.Events)
+                        @foreach (var item in Model.CurrentEvents)
                         {
                             @switch (item.State)
                             {
@@ -151,11 +151,11 @@
         }
         else
         {
-            @if (Model.Events.Where(i => i.State == EventVisitState.Visited).Any())
+            @if (Model.CurrentEvents.Where(i => i.State == EventVisitState.Visited).Any())
             {
                 <div class="container rounded rounded-lg mt-2 ">
                     <ul class="list-unstyled">
-                        @foreach (var item in Model.Events.Where(i => i.State == EventVisitState.Visited))
+                        @foreach (var item in Model.CurrentEvents.Where(i => i.State == EventVisitState.Visited))
                         {
                             <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
                                 <div class="media-body">
@@ -174,8 +174,94 @@
             }
         }
     </div>
-
 </div>
+
+<div>
+    <div class="p-2 text-center">
+        <a class="btn btn-secondary" data-toggle="collapse" href="#collapseId" role="button" aria-expanded="false" aria-controls="collapseId"> Прошлые семестры </a>
+    </div>
+
+    <div class="collapse" id="collapseId">
+        <h2>Посещения в прошлых семестрах</h2>
+    <div class="pt-2">
+        @if (User.IsInRole(UserRoles.Moderator) || User.IsInRole(UserRoles.Admin))
+        {
+            @if (Model.OldEvents.Any())
+            {
+                <div class="container rounded rounded-lg mt-2 ">
+                    <ul class="list-unstyled">
+                        @foreach (var item in Model.OldEvents)
+                        {
+                            @switch (item.State)
+                            {
+                                case EventVisitState.Visited:
+                                    <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                case EventVisitState.NotVisited:
+                                    <li class="media border alert-danger text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                case EventVisitState.NotHappendYet:
+                                    <li class="media border alert-secondary text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                            @item.Date.ToString("dd/MM/yyyy")
+                                            <br />
+                                        </div>
+                                    </li>
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <h5>Посещений нет</h5>
+            }
+        }
+        else
+        {
+            @if (Model.OldEvents.Where(i => i.State == EventVisitState.Visited).Any())
+            {
+                <div class="container rounded rounded-lg mt-2 ">
+                    <ul class="list-unstyled">
+                        @foreach (var item in Model.OldEvents.Where(i => i.State == EventVisitState.Visited))
+                        {
+                            <li class="media border alert-success text-dark border-success border- rounded rounded-lg p-2 m-1">
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">@item.EventName</h5>
+                                    @item.Date.ToString("dd/MM/yyyy")
+                                    <br />
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <h5>Посещений пока нет, но скоро будут!</h5>
+            }
+        }
+    </div>
+</div>
+</div>
+
+
 <div>
     <a class="btn btn-outline-primary mt-4" asp-action="Index">К списку игроков</a>
 </div>

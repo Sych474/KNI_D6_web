@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KNI_D6_web.Model;
-using KNI_D6_web.Model.Achievements;
 using KNI_D6_web.Model.Database.Repositories;
 using KNI_D6_web.Model.Parameters;
 using KNI_D6_web.ViewModels.Components.AchievementsProgress;
 using KNI_D6_web.ViewModels.Users;
+using KNI_D6_web.ViewModels.Users.IndexViewModels;
 using KNI_D6_web.ViewModels.Users.UserDetailsViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,22 +25,42 @@ namespace KNI_D6_web.Controllers
         private readonly IAchievementsRepository achievementsRepository;
         private readonly IUserAchievementsRepository userAchievementsRepository;
         private readonly IEventsRepository eventsRepository;
+        private readonly ISemestersRepository semestersRepository;
 
-        public UsersController(UserManager<User> userManager, IUsersRepository usersRepository, IAchievementsRepository achievementsRepository, IUserAchievementsRepository userAchievementsRepository, IEventsRepository eventsRepository)
+        public UsersController(UserManager<User> userManager, IUsersRepository usersRepository, IAchievementsRepository achievementsRepository, IUserAchievementsRepository userAchievementsRepository, IEventsRepository eventsRepository, ISemestersRepository semestersRepository)
         {
             this.userManager = userManager;
             this.usersRepository = usersRepository;
             this.achievementsRepository = achievementsRepository;
             this.userAchievementsRepository = userAchievementsRepository;
             this.eventsRepository = eventsRepository;
+            this.semestersRepository = semestersRepository;
         }
 
         public async Task<IActionResult> Index()
         {
+            var currentSemester = await semestersRepository.FindCurrentSemesterAsync();
+
+            var users = await usersRepository.GetUsersWithLinksAsync();
+
+            var usersViewModels = new List<UserViewModel>(users.Count);
+
+            foreach (var item in users)
+            {
+                var eventsCount = (currentSemester != null) ? item.UserEvents.Count(ue => ue.Event.SemesterId == currentSemester.Id) : item.UserEvents.Count();
+                usersViewModels.Add(new UserViewModel()
+                {
+                    Id = item.Id, 
+                    Name = item.UserName, 
+                    AchievementsCount = item.UserAchievements.Count(),
+                    EventsCount = eventsCount,
+                    Position = item.Position.GetDescription()
+                });
+            }
+
             var viewModel = new UsersViewModel()
             {
-                Users = (await usersRepository.GetUsersWithLinksAsync())
-                    .OrderByDescending(u => u.UserAchievements.Count())
+                Users = usersViewModels.OrderByDescending(u => u.AchievementsCount).ThenByDescending(u => u.EventsCount)
             };
 
             return View(viewModel);
@@ -53,6 +73,9 @@ namespace KNI_D6_web.Controllers
             if (user == null)
                 return NotFound(id);
 
+            var events = await CreateUserDetailsEventViewModels(user.UserEvents);
+            var currentSemester = await semestersRepository.FindCurrentSemesterAsync();
+
             var viewModel = new UserDetailsViewModel()
             {
                 UserId = id,
@@ -60,7 +83,8 @@ namespace KNI_D6_web.Controllers
                 Position = user.Position,
                 Parameters = CreateUserDetailsParameterViewModels(user.ParameterValues),
                 Achievements = CreateUserDetailsAchievementViewModels(user.UserAchievements),
-                Events = await CreateUserDetailsEventViewModels(user.UserEvents)
+                CurrentEvents = events.Where(e => e.SemesterId == currentSemester?.Id),
+                OldEvents = events.Where(e => e.SemesterId != currentSemester?.Id),
             };
 
             return View(viewModel);
@@ -255,6 +279,7 @@ namespace KNI_D6_web.Controllers
             {
                 result.Add(new UserDetailsEventViewModel()
                 {
+                    SemesterId = item.SemesterId,
                     Date = item.Date,
                     EventId = item.Id,
                     EventName = item.Name, 
@@ -262,6 +287,7 @@ namespace KNI_D6_web.Controllers
                 });
             }
 
+            result.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
             return result;
         }
 
