@@ -5,7 +5,7 @@ jobs:
     - stage: test build 
       language: csharp
       mono: none
-      dotnet: 2.2
+      dotnet: 3.1
       script:  
       - dotnet build ./ -c Release
     - stage: build docker
