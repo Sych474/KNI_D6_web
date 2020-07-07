@@ -32,13 +32,13 @@ namespace KNI_D6_web.Model.Database.Repositories.Implementation
             return context.Users.Where(u => u.Position == position).ToListAsync();
         }
 
-        public Task<List<User>> GetUsersWithLinksAsync()
+        public async Task<List<User>> GetUsersWithLinksAsync()
         {
-            return context.Users
-                .Include(u => u.UserAchievements)
-                .Include(u => u.ParameterValues)
-                .Include(u => u.UserEvents)
-                .ToListAsync();
+            return await context.Users
+                   .Include(u => u.UserAchievements)
+                   .Include(u => u.ParameterValues)
+                   .Include(u => u.UserEvents).ThenInclude(ue => ue.Event)
+                   .ToListAsync();
         }
 
         public async Task UpdateUserAsync(User entity)

@@ -6,6 +6,8 @@ namespace KNI_D6_web.ViewModels.Users.UserDetailsViewModels
     {
         public int EventId { get; set; }
 
+        public int? SemesterId { get; set; }
+
         public string EventName { get; set; }
 
         public DateTime Date { get; set; }
